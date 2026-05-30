@@ -410,6 +410,11 @@
       <option value="csdm">CSDM</option>
       <option value="insight">Insight</option>
     </select>
+    <select id="quiz-source">
+      <option value="all">Mix (all sources)</option>
+      <option value="et">Exam Prep (original)</option>
+      <option value="my">Generated</option>
+    </select>
     <select id="quiz-count">
       <option value="10">10 questions</option>
       <option value="20">20 questions</option>
@@ -890,8 +895,11 @@ let correct_count = 0;
 
 function startQuiz() {
   const domain = document.getElementById('quiz-domain').value;
+  const source = document.getElementById('quiz-source').value;
   const count = parseInt(document.getElementById('quiz-count').value);
   let pool = domain === 'all' ? [...questions] : questions.filter(q => q.domain === domain);
+  pool = pool.filter(Boolean);
+  if (source !== 'all') pool = pool.filter(q => q.source === source);
   pool = pool.sort(() => Math.random() - 0.5).slice(0, Math.min(count, pool.length));
   quizQuestions = pool;
   answered = 0;
