@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIS-DF (CMDB & CSDM) – Przygotowanie do egzaminu</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242838;
+    --border: #2e3347;
+    --accent: #6c8aff;
+    --accent2: #4ade80;
+    --warn: #f59e0b;
+    --danger: #f87171;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; line-height: 1.6; }
+
+  /* NAV */
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: sticky; top: 0; z-index: 100; }
+  nav h1 { font-size: 14px; color: var(--accent); font-weight: 700; margin-right: 16px; }
+  .tab-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+  .tab-btn.active, .tab-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* LAYOUT */
+  .tab { display: none; padding: 24px; max-width: 960px; margin: 0 auto; }
+  .tab.active { display: block; }
+
+  /* PLAN */
+  .plan-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  .plan-section h2 { color: var(--accent); font-size: 16px; margin-bottom: 12px; }
+  .plan-section h3 { color: var(--warn); font-size: 14px; margin: 12px 0 6px; }
+  .plan-section p, .plan-section li { font-size: 14px; color: var(--text2); margin-bottom: 4px; }
+  .plan-section ul { list-style: disc; padding-left: 20px; }
+  .domain-bar { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+  .domain-label { font-size: 13px; color: var(--text); min-width: 180px; }
+  .bar-outer { flex: 1; background: var(--border); border-radius: 4px; height: 8px; }
+  .bar-inner { height: 8px; border-radius: 4px; background: var(--accent); }
+  .pct { font-size: 12px; color: var(--accent); min-width: 36px; }
+  .pill { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--text2); margin: 3px; }
+  .pill.hot { border-color: var(--warn); color: var(--warn); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--surface2); color: var(--accent); padding: 8px 12px; text-align: left; border: 1px solid var(--border); }
+  td { padding: 7px 12px; border: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+  tr:nth-child(even) td { background: #1c1f2d; }
+
+  /* FLASHCARDS */
+  .fc-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .fc-controls select, .fc-controls button { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .fc-controls button { background: var(--accent); border-color: var(--accent); color: white; }
+  .fc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; min-height: 160px; cursor: pointer; transition: transform 0.1s; position: relative; }
+  .fc-card:hover { transform: scale(1.01); }
+  .fc-question { font-size: 15px; color: var(--text); margin-bottom: 12px; }
+  .fc-answer { display: none; background: var(--surface2); border-left: 3px solid var(--correct); padding: 12px; border-radius: 6px; font-size: 14px; color: var(--text2); margin-top: 12px; }
+  .fc-answer.show { display: block; }
+  .fc-tag { font-size: 11px; color: var(--text2); background: var(--surface2); border-radius: 4px; padding: 2px 8px; display: inline-block; margin-bottom: 8px; }
+  .fc-nav { display: flex; gap: 8px; margin-top: 12px; justify-content: space-between; align-items: center; }
+  .fc-nav button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .fc-nav button:hover { background: var(--accent); border-color: var(--accent); color: white; }
+  .fc-counter { font-size: 13px; color: var(--text2); }
+
+  /* QUIZ */
+  .quiz-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .quiz-controls select, .quiz-controls button { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .quiz-controls button { background: var(--accent); border-color: var(--accent); color: white; }
+  .q-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 14px; }
+  .q-header { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+  .q-num { background: var(--accent); color: white; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .q-domain { background: var(--surface2); color: var(--warn); border-radius: 6px; padding: 2px 8px; font-size: 11px; white-space: nowrap; }
+  .q-text { font-size: 14px; color: var(--text); }
+  .opt-list { list-style: none; margin-top: 10px; }
+  .opt-list li { margin-bottom: 6px; }
+  .opt-btn { width: 100%; text-align: left; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 9px 14px; border-radius: 7px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+  .opt-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
+  .opt-btn.selected { border-color: var(--accent); background: rgba(108,138,255,0.12); color: var(--text); }
+  .opt-btn.correct { border-color: var(--correct); background: rgba(34,197,94,0.12); color: var(--correct); }
+  .opt-btn.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.12); color: var(--wrong); }
+  .q-explain { display: none; margin-top: 10px; background: var(--surface2); border-left: 3px solid var(--accent); padding: 10px; border-radius: 6px; font-size: 13px; color: var(--text2); }
+  .q-explain.show { display: block; }
+  .check-btn { margin-top: 10px; background: var(--accent); border: none; color: white; padding: 7px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .quiz-score { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; font-size: 15px; display: none; }
+  .quiz-score.show { display: block; }
+  .score-big { font-size: 48px; font-weight: 700; margin: 10px 0; }
+  .score-big.pass { color: var(--correct); }
+  .score-big.fail { color: var(--wrong); }
+
+  /* NOTES */
+  .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .notes-grid { grid-template-columns: 1fr; } }
+  .note-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .note-card h3 { color: var(--accent); font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .note-card ul { list-style: none; }
+  .note-card li { font-size: 13px; color: var(--text2); padding: 4px 0; border-bottom: 1px solid #1e2235; display: flex; gap: 6px; }
+  .note-card li:before { content: '→'; color: var(--accent); }
+  .note-card li strong { color: var(--text); }
+  .note-card p { font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+  .badge { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 10px; margin-left: 4px; }
+  .badge.blue { background: rgba(108,138,255,0.2); color: var(--accent); }
+  .badge.green { background: rgba(74,222,128,0.2); color: var(--accent2); }
+  .badge.yellow { background: rgba(245,158,11,0.2); color: var(--warn); }
+
+  /* POOL */
+  .pool-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .pool-controls select, .pool-controls input { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 6px; font-size: 13px; }
+  .pool-controls input { flex: 1; min-width: 180px; }
+  .pool-legend { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; font-size: 13px; }
+  .src-et { display: inline-flex; align-items: center; gap: 5px; }
+  .src-et::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: rgba(74,222,128,0.25); border: 1px solid var(--accent2); }
+  .src-my { display: inline-flex; align-items: center; gap: 5px; }
+  .src-my::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: rgba(108,138,255,0.18); border: 1px solid var(--accent); }
+  .pool-table-wrap { overflow-x: auto; }
+  .pool-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .pool-table th { background: var(--surface2); color: var(--accent); padding: 9px 12px; text-align: left; border: 1px solid var(--border); position: sticky; top: 0; }
+  .pool-table td { padding: 8px 12px; border: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+  .pool-table tr.source-et td { background: rgba(74,222,128,0.05); }
+  .pool-table tr.source-my td { background: rgba(108,138,255,0.05); }
+  .pool-table tr:hover td { filter: brightness(1.15); }
+  .src-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+  .src-badge.et { background: rgba(74,222,128,0.2); color: var(--accent2); border: 1px solid var(--accent2); }
+  .src-badge.my { background: rgba(108,138,255,0.18); color: var(--accent); border: 1px solid var(--accent); }
+  .dom-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; white-space: nowrap; background: var(--surface2); color: var(--warn); }
+  .type-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--surface2); color: var(--text2); }
+  .pool-q-row td.q-cell { max-width: 420px; }
+  .ans-text { color: var(--correct); font-weight: 600; }
+  .pool-stats { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; }
+  .pool-stats span { color: var(--text2); }
+  .pool-stats strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>🎯 CIS-DF Exam Prep</h1>
+  <button class="tab-btn active" onclick="showTab('plan')">📋 Plan nauki</button>
+  <button class="tab-btn" onclick="showTab('notes')">📝 Kluczowe tematy</button>
+  <button class="tab-btn" onclick="showTab('flashcards')">🃏 Flashcards</button>
+  <button class="tab-btn" onclick="showTab('quiz')">✅ Quiz</button>
+  <button class="tab-btn" onclick="showTab('pool')">📚 Pula pytań</button>
+</nav>
+
+<!-- TAB: PLAN -->
+<div id="tab-plan" class="tab active">
+  <div class="plan-section">
+    <h2>📊 Struktura egzaminu CIS-DF (CMDB & CSDM)</h2>
+    <p style="margin-bottom:14px; font-size:14px;">75 pytań · 90 minut · Pearson VUE (online lub centrum testowe)</p>
+    <div class="domain-bar"><span class="domain-label">Govern (zarządzanie)</span><div class="bar-outer"><div class="bar-inner" style="width:35%"></div></div><span class="pct">35%</span></div>
+    <div class="domain-bar"><span class="domain-label">Insight (analiza)</span><div class="bar-outer"><div class="bar-inner" style="width:20%"></div></div><span class="pct">20%</span></div>
+    <div class="domain-bar"><span class="domain-label">Ingest (wgrywanie)</span><div class="bar-outer"><div class="bar-inner" style="width:19%"></div></div><span class="pct">19%</span></div>
+    <div class="domain-bar"><span class="domain-label">Configuration (konfiguracja)</span><div class="bar-outer"><div class="bar-inner" style="width:15%"></div></div><span class="pct">15%</span></div>
+    <div class="domain-bar"><span class="domain-label">CSDM Fundamentals</span><div class="bar-outer"><div class="bar-inner" style="width:11%"></div></div><span class="pct">11%</span></div>
+    <p style="font-size:12px; color:var(--text2); margin-top:10px;">Typy pytań: Multiple Choice, Multiple Select, Matching (Drag & Drop), Scenario-based. Brak partial credit.</p>
+  </div>
+
+  <div class="plan-section">
+    <h2>🔥 Hot topics (na podstawie notatek z egzaminów)</h2>
+    <span class="pill hot">IRE – dużo pytań</span>
+    <span class="pill hot">ETL / IntegrationHub ETL</span>
+    <span class="pill hot">CI Classes + Principal Classes</span>
+    <span class="pill hot">CMDB 360 / Multisource</span>
+    <span class="pill hot">CSDM Implementation Stages</span>
+    <span class="pill hot">Playbooks – funkcje i kiedy używać</span>
+    <span class="pill hot">CMDB Health Dashboard</span>
+    <span class="pill hot">CMDB Rules (Staleness, Archive)</span>
+    <span class="pill hot">Natural Language Query</span>
+    <span class="pill">Data Manager policies</span>
+    <span class="pill">Deduplication wizard</span>
+    <span class="pill">Asset-CI sync</span>
+    <span class="pill">Service Graph Connectors</span>
+    <span class="pill">Dynamic CI Groups</span>
+  </div>
+
+  <div class="plan-section">
+    <h2>📅 Plan nauki (14 dni)</h2>
+    <table>
+      <tr><th>Dzień</th><th>Temat</th><th>Materiały</th><th>Czas</th></tr>
+      <tr><td>1</td><td>CI Class Manager – tabele, hierarchia, Principal Classes, atrybuty</td><td>ExamTopics Topic 1 Q1-15 + flashcards</td><td>2h</td></tr>
+      <tr><td>2</td><td>IRE – identyfikacja, reklasyfikacja (Upgrade/Switch), reconciliation</td><td>ExamTopics Topic 1 Q16-38 + Topic 2 Q5-6</td><td>2h</td></tr>
+      <tr><td>3</td><td>Ingest – ETL, SGC, Import Sets, ACC, Discovery</td><td>Topic 2 Q1-16 + notatki</td><td>2h</td></tr>
+      <tr><td>4</td><td>CMDB 360 / Multisource – Dynamic Reconciliation Rules</td><td>Topic 2 Q1,4,25,28 + CSDM whitepaper</td><td>1.5h</td></tr>
+      <tr><td>5</td><td>CMDB Health Dashboard – 6 metryk, Scorecard</td><td>Topic 3 Q1-11 + flashcards</td><td>2h</td></tr>
+      <tr><td>6</td><td>Data Manager – polityki (Attestation, Certification, Archive, Delete, Retire)</td><td>Topic 3 Q5,8,13,17,20-23,29-31</td><td>2h</td></tr>
+      <tr><td>7</td><td>POWTÓRKA 1-6 + quiz 30 pytań</td><td>Quiz losowy w tym pliku</td><td>2h</td></tr>
+      <tr><td>8</td><td>CSDM – domeny, etapy implementacji (Crawl/Walk/Run/Fly), serwisy</td><td>CSDM 5 whitepaper + flashcards CSDM</td><td>2h</td></tr>
+      <tr><td>9</td><td>Insight – NLQ, CMDB Query Builder, Unified Map, Playbooks</td><td>Materiały + blueprint</td><td>1.5h</td></tr>
+      <tr><td>10</td><td>Asset-CI synchronizacja, Field Mapping, life cycle</td><td>ExamTopics Q5,10,24,31 + notatki</td><td>1.5h</td></tr>
+      <tr><td>11</td><td>Service types – Business Service, App Service, Tech Mgmt Service</td><td>CSDM whitepaper Service Delivery</td><td>1.5h</td></tr>
+      <tr><td>12</td><td>POWTÓRKA trudnych pytań + pełny quiz 50 pytań</td><td>Quiz w tym pliku</td><td>2h</td></tr>
+      <tr><td>13</td><td>Simulation – pełny test 75 pytań czasowy</td><td>ExamTopics pages 3-4 (samodzielnie)</td><td>90 min</td></tr>
+      <tr><td>14</td><td>Review słabych obszarów + flashcards szybkie</td><td>Filtr "tylko błędy"</td><td>1.5h</td></tr>
+    </table>
+  </div>
+
+  <div class="plan-section">
+    <h2>💡 Tricki egzaminacyjne</h2>
+    <h3>Styl pytań (ok. 40/75)</h3>
+    <p>Scenario-based: "Administrator X chce zrobić Y – jak to osiągnąć?" → szukaj NARZĘDZIA, nie procesu.</p>
+    <h3>Kluczowe rozróżnienia na egzaminie</h3>
+    <table>
+      <tr><th>Mylące</th><th>Prawidłowa odpowiedź</th></tr>
+      <tr><td>Stale CIs → który scorecard?</td><td><strong>Correctness</strong> (nie Completeness)</td></tr>
+      <tr><td>Validate existence of CI</td><td><strong>Attestation</strong> (nie Certification)</td></tr>
+      <tr><td>Validate/update attributes of CI</td><td><strong>Certification</strong> (nie Attestation)</td></tr>
+      <tr><td>Remove old CIs in bulk</td><td><strong>Archive Policy</strong> w Data Manager</td></tr>
+      <tr><td>CI must be archived/deleted prerequisite</td><td>Musi być <strong>Retired + End of Life</strong></td></tr>
+      <tr><td>Support Group auto-populate on Incident</td><td>Pochodzi z <strong>Assignment Group</strong> na CI → pole "Assignment group" na Incident</td></tr>
+      <tr><td>Custom CMDB table prefix</td><td><strong>u_cmdb_ci</strong></td></tr>
+      <tr><td>Server→Windows Server = ?</td><td><strong>Class Upgrade</strong></td></tr>
+      <tr><td>Fastest time to value dla SCCM</td><td><strong>Service Graph Connector</strong></td></tr>
+      <tr><td>IRE in Transform Map</td><td>Script type: <strong>onBefore</strong></td></tr>
+      <tr><td>De-dup tasks w CMDB Workspace</td><td>Zakładka <strong>Home → Important actions</strong></td></tr>
+      <tr><td>Dynamic Reconciliation Rule types</td><td><strong>Smallest Value + Most Reported</strong> (nie Last Updated)</td></tr>
+      <tr><td>Groups synced via Tech Mgmt Offering</td><td><strong>Managed by Group + Support Group</strong> (i też Change Group wg T1Q21)</td></tr>
+      <tr><td>Principal Class → gdzie ustawić?</td><td>CI Class Manager → Class Info → <strong>Basic Info</strong> → checkbox</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- TAB: NOTES -->
+<div id="tab-notes" class="tab">
+  <div class="notes-grid">
+    <div class="note-card">
+      <h3>🔧 CI Class Manager – kluczowe fakty</h3>
+      <ul>
+        <li>Centralne miejsce: atrybuty, IRE rules, suggested relationships, Basic Info</li>
+        <li><strong>Principal Class</strong> → Basic Info tab → checkbox → filtruje CI reference fields na formularzach ITSM</li>
+        <li>Role do zarządzania: <strong>sn_cmdb_admin + personalize_dictionary</strong></li>
+        <li><strong>Pinned Classes</strong> = streamline zarządzania konkretną klasą</li>
+        <li>Nowa klasa custom: <strong>u_cmdb_ci_</strong> prefix</li>
+        <li>Nową klasę zawsze dodawaj pod odpowiednią klasą nadrzędną</li>
+        <li>Najpierw sprawdź CMDB CI Class Models store app czy klasa już istnieje</li>
+        <li><strong>Added</strong> tab = atrybuty stworzone dla konkretnej klasy (np. Windows Server)</li>
+        <li>Health Inclusion Rules → zawężają scope CIs w procesie identyfikacji (IRE)</li>
+        <li>Multisource property: <strong>glide.identification_engine.multisource_enabled</strong></li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>⚙️ IRE – Identification & Reconciliation Engine</h3>
+      <ul>
+        <li><strong>Allow fallback to parent's rules</strong> = jeśli brak dopasowania, próbuje regułę klasy nadrzędnej</li>
+        <li><strong>Class Upgrade</strong> = Server → Windows Server (bardziej szczegółowa klasa)</li>
+        <li><strong>Class Downgrade</strong> = Windows Server → Server (mniej szczegółowa)</li>
+        <li><strong>Class Switch</strong> = zmiana na inny branch hierarchii</li>
+        <li>Criterion attribute dla tej samej apki kilka razy na serwerze → <strong>Configuration File Path</strong></li>
+        <li>Reconciliation priority: niższy numer = wyższy priorytet (100 > 200)</li>
+        <li>Wyższy priorytet może UPDATE niższy; niższy priorytet nie może update wyższy</li>
+        <li>Każde źródło może INSERT nowe rekordy niezależnie od priorytetu</li>
+        <li><strong>Data Refresh Rules</strong> = pozwala niższemu źródłu update po X dniach bez zmian z wyższego</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>📥 Ingest – metody wgrywania danych</h3>
+      <ul>
+        <li><strong>Service Graph Connector</strong> = fastest time to value, pre-built, minimizes tech debt</li>
+        <li><strong>IntegrationHub ETL</strong> = recommended by IRE, field-to-field mapping, 3rd party & non-CMDB</li>
+        <li><strong>Import Sets + Transform Maps</strong> = stara metoda; użyj CMDBTransformUtil API dla IRE</li>
+        <li><strong>Agent Client Collector (ACC)</strong> = urządzenia w bezpiecznych środowiskach + intermittently connected</li>
+        <li><strong>ServiceNow Discovery</strong> = automatyczne relacje; agentless; sieć LAN</li>
+        <li><strong>Service Mapping</strong> = automatyczne relacje Application Service (top-down)</li>
+        <li>SGC customization → upgrade skips zmienione mappings (skipped change created)</li>
+        <li>Po customizacji SGC → customer odpowiada za support tych customizations</li>
+        <li>SGC Central tab dostępny w: <strong>CMDB Workspace</strong></li>
+        <li>Import Sets + Transform Map: script type <strong>onBefore</strong> dla IRE</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>📊 CMDB Health Dashboard – 6 metryk</h3>
+      <ul>
+        <li><strong>Correctness</strong> scorecard zawiera: Duplicate CIs, Orphan CIs, <strong>Stale CIs</strong></li>
+        <li><strong>Completeness</strong> scorecard: Required fields, Recommended fields (brakujące atrybuty)</li>
+        <li><strong>Compliance</strong> scorecard: Audits (certyfikaty, patch level itp.)</li>
+        <li>Stale CIs = nie były update'owane → pole: <strong>sys_updated_on</strong></li>
+        <li>Health Inclusion Rule = zawęża scope klasy w danej metryce (np. Orphan tylko 50K z 60K)</li>
+        <li>Health scores generowane przez: <strong>scheduled jobs</strong> (muszą być aktywne)</li>
+        <li>Compliance scorecard requires: Certification Filter + Certification Template + <strong>Audit</strong></li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>🗃️ CMDB Data Manager – polityki</h3>
+      <ul>
+        <li><strong>Attestation</strong> = potwierdzenie że CI ISTNIEJE (ktoś potwierdza/odrzuca)</li>
+        <li><strong>Certification</strong> = walidacja i UPDATE atrybutów CI (zadanie przypisane do osoby)</li>
+        <li><strong>Archive Policy</strong> = zarządzanie wolumenem danych CMDB; usuwa stare</li>
+        <li><strong>Delete Policy</strong> = po Retire → Delete (po potwierdzeniu)</li>
+        <li><strong>Retire Policy</strong> = trigger lifecycle retirement</li>
+        <li>Prerequisite do archive/delete: CI musi być <strong>Retired + End of Life</strong></li>
+        <li>Data Manager tasks w CMDB Workspace: <strong>Management tab</strong></li>
+        <li>Data Manager generuje tasks w CMDB Workspace → <strong>My Work tab</strong></li>
+        <li>De-dup tasks IRE → CMDB Workspace → <strong>Home → Important actions</strong></li>
+        <li>Group reference w Data Manager policy: <strong>Managed By Group</strong></li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>🔄 CMDB 360 / Multisource</h3>
+      <ul>
+        <li>Enable: <strong>glide.identification_engine.multisource_enabled</strong></li>
+        <li>Aktywuje Dynamic Reconciliation Rules</li>
+        <li>Dynamic Rule Types: <strong>Smallest Value, Most Reported, Largest Value</strong></li>
+        <li>IRE reconciliation rules działają bez CMDB 360 (niezależnie od licencji ITOM Discovery)</li>
+        <li>Hierarchia: klasa bardziej szczegółowa (Windows Server) override klasa nadrzędna (Server)</li>
+        <li>Most Reported → wartość zgłoszona przez największą liczbę źródeł</li>
+        <li>Review field-to-field mappings SGC: <strong>IntegrationHub ETL</strong></li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>🗺️ CSDM – domeny i etapy</h3>
+      <ul>
+        <li>7 domen: Foundation, Ideation & Strategy, Design & Planning, Build & Integration, Service Delivery, Service Consumption, Manage Portfolio</li>
+        <li><strong>Foundation</strong> = Company, BU, Department, Location, User, Group (NIE są CI!)</li>
+        <li><strong>Business Service</strong> = jak klient widzi serwis (cmdb_ci_service_business)</li>
+        <li><strong>Technology Management Service</strong> = dawniej Technical Service (cmdb_ci_service_technical)</li>
+        <li><strong>Service Instance</strong> = dawniej Application Service (cmdb_ci_service_auto)</li>
+        <li>Operational CIs (ITSM/IPC): Business Service, Tech Mgmt Service, Application Service</li>
+        <li>Etapy: <strong>Foundation → Crawl → Walk → Run → Fly</strong></li>
+        <li>Podejścia: Outcome Centric, Domain Centric, Step-wise (Crawl/Walk/Run/Fly)</li>
+        <li>CSDM NIE jest produktem/SKU – to framework bez kodu do instalacji</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>💡 Insight – analiza i raportowanie</h3>
+      <ul>
+        <li><strong>Natural Language Query (NLQ)</strong> = CMDB Search; agent-based; tworzenie w CMDB Workspace</li>
+        <li><strong>CMDB Query Builder</strong> = complex queries wieloklasowe, CMDB 360 saved queries</li>
+        <li><strong>Unified Map</strong> = widok zależności (Dependency View)</li>
+        <li><strong>Playbooks</strong> = structured guidelines: Problem Overview → Problem Analysis → Importance → Fix/Improve</li>
+        <li>Playbooks dostępne w: <strong>CMDB Data Foundations Dashboard</strong></li>
+        <li>Playbooks NIE automatycznie naprawiają – pomagają ANALIZOWAĆ i NAPRAWIAĆ</li>
+        <li>Business value CMDB: impact analysis, change risk, MTTR reduction</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>🔗 Asset-CI synchronizacja</h3>
+      <ul>
+        <li>Auto-sync: dwie business rules muszą być aktywne (CI→Asset + Asset→CI)</li>
+        <li><strong>Asset-CI Field Mapping module</strong> = konfiguracja mapowania pól w obie strony</li>
+        <li>Asset State → CI: synchronizuje <strong>Install Status + Hardware Status</strong> (wg sample Q2)</li>
+        <li>Discovery source = <strong>SNAssetManagement</strong> dla CI stworzonych z assetu (bez discovery)</li>
+        <li>Last Discovered = empty → CI nie był odkryty przez Discovery</li>
+        <li>Dynamic CI Group na Change form → CI field → Affected CIs related list jest auto-populated</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h3>🏗️ Dynamic CI Groups i Technical Service Offerings</h3>
+      <ul>
+        <li>CMDB Group methods: <strong>Saved queries + Encoded queries</strong> (nie Tag-based, nie Scripted)</li>
+        <li>Groups syncowane na CI z Tech Mgmt Offering: <strong>Managed by Group + Support Group + Change Group</strong></li>
+        <li>Priorytet dla Managed By Group: <strong>Technical Service Offering</strong> override CI Class Manager</li>
+        <li>Dynamic CI Group na Change form → <strong>Affected CIs related list</strong> auto-populated</li>
+        <li>Dynamic CI Group classification: Application Service LUB Technical Service (Service Classification)</li>
+        <li>CI nie powinien być w wielu Dynamic CI Groups powiązanych z różnymi Tech Mgmt Services</li>
+        <li>Support Group na Incident po wybraniu CI → pochodzi ze <strong>Assignment Group</strong> (nie Support Group)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: FLASHCARDS -->
+<div id="tab-flashcards" class="tab">
+  <div class="fc-controls">
+    <select id="fc-filter">
+      <option value="all">Wszystkie tematy</option>
+      <option value="config">Configuration</option>
+      <option value="ingest">Ingest</option>
+      <option value="govern">Govern</option>
+      <option value="csdm">CSDM</option>
+      <option value="insight">Insight</option>
+    </select>
+    <button onclick="shuffleFC()">🔀 Losuj kolejność</button>
+    <button onclick="resetFC()">↩ Reset</button>
+  </div>
+  <div class="fc-card" id="fc-card" onclick="toggleAnswer()">
+    <div id="fc-tag" class="fc-tag">Loading...</div>
+    <div id="fc-q" class="fc-question">Kliknij aby zacząć</div>
+    <div id="fc-a" class="fc-answer"></div>
+  </div>
+  <div class="fc-nav">
+    <button onclick="prevFC()">← Poprzedni</button>
+    <span class="fc-counter" id="fc-counter">0 / 0</span>
+    <button onclick="nextFC()">Następny →</button>
+  </div>
+</div>
+
+<!-- TAB: QUIZ -->
+<div id="tab-quiz" class="tab">
+  <div class="quiz-controls">
+    <select id="quiz-domain">
+      <option value="all">Wszystkie domeny (mix)</option>
+      <option value="config">Configuration</option>
+      <option value="ingest">Ingest</option>
+      <option value="govern">Govern</option>
+      <option value="csdm">CSDM</option>
+      <option value="insight">Insight</option>
+    </select>
+    <select id="quiz-count">
+      <option value="10">10 pytań</option>
+      <option value="20">20 pytań</option>
+      <option value="40">40 pytań</option>
+      <option value="75">75 pytań (full exam)</option>
+    </select>
+    <button onclick="startQuiz()">▶ Start Quiz</button>
+  </div>
+  <div id="quiz-container"></div>
+  <div id="quiz-score" class="quiz-score"></div>
+</div>
+
+<!-- TAB: POOL -->
+<div id="tab-pool" class="tab">
+  <div class="pool-stats" id="pool-stats"></div>
+  <div class="pool-controls">
+    <select id="pool-domain-filter" onchange="renderPool()">
+      <option value="all">Wszystkie domeny</option>
+      <option value="config">Configuration</option>
+      <option value="ingest">Ingest</option>
+      <option value="govern">Govern</option>
+      <option value="csdm">CSDM</option>
+      <option value="insight">Insight</option>
+    </select>
+    <select id="pool-source-filter" onchange="renderPool()">
+      <option value="all">Wszystkie źródła</option>
+      <option value="et">ExamTopics (oryginalne)</option>
+      <option value="my">Dodatkowe</option>
+    </select>
+    <input type="text" id="pool-search" placeholder="🔍 Szukaj w treści pytania..." oninput="renderPool()">
+  </div>
+  <div class="pool-legend">
+    <span class="src-et">ExamTopics – pytania z Twojego pliku</span>
+    <span class="src-my">Dodatkowe – pytania uzupełniające</span>
+  </div>
+  <div class="pool-table-wrap">
+    <table class="pool-table" id="pool-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Źródło</th>
+          <th>Domena</th>
+          <th>Typ</th>
+          <th>Pytanie</th>
+          <th>Poprawna odpowiedź</th>
+        </tr>
+      </thead>
+      <tbody id="pool-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const flashcards = [
+  // CONFIGURATION
+  {tag:"config", q:"Gdzie ustawia się Principal Class dla klasy CI?", a:"CI Class Manager → Class Info → Basic Info tab → checkbox 'Principal Class'"},
+  {tag:"config", q:"Jakie role są potrzebne do dodania nowej custom CI class?", a:"sn_cmdb_admin + personalize_dictionary"},
+  {tag:"config", q:"Jak powinny być nazwane custom CMDB tables (prefix)?", a:"u_cmdb_ci_ (np. u_cmdb_ci_iot_sensor)"},
+  {tag:"config", q:"Co robi Principal Class checkbox w CI Class Manager?", a:"Filtruje które CI pojawiają się w CI reference fields na formularzach Incident/Change/Problem"},
+  {tag:"config", q:"Który tab w CI Class Manager pokazuje atrybuty stworzone TYLKO dla danej klasy (np. Windows Server)?", a:"'Added' tab w sekcji Attributes"},
+  {tag:"config", q:"Gdzie centralnie zbieramy: atrybuty, IRE rules, suggested relationships dla klasy?", a:"CI Class Manager"},
+  {tag:"config", q:"Jak włączyć CMDB 360/Multisource CMDB?", a:"Włączyć system property: glide.identification_engine.multisource_enabled"},
+  {tag:"config", q:"Co robi Health Inclusion Rules w CI Class Manager?", a:"Zawęża scope CIs uwzględnianych w procesie identyfikacji przez IRE"},
+  {tag:"config", q:"Jakie metody można użyć do tworzenia CMDB Groups?", a:"Saved queries (Query Builder) + Encoded queries. NIE: Tag-based, NIE: Scripted"},
+  {tag:"config", q:"Gdzie konfigurować identyfikation rules dla klasy CI?", a:"CI Identifiers module LUB CI Class Manager (dwa miejsca!)"},
+  {tag:"config", q:"Co to Allow fallback to parent's rules w IRE?", a:"Jeśli brak dopasowania w bieżącej regule klasy, IRE spróbuje użyć reguły klasy nadrzędnej"},
+  {tag:"config", q:"Relacja Application → Server", a:"Application > Runs on :: Runs > Server"},
+  {tag:"config", q:"Application Server (cmdb_ci_app_server) vs Application (cmdb_ci_appl) – jaka relacja?", a:"Many-to-many: jeden serwer hostuje wiele aplikacji, jedna aplikacja może być na wielu serwerach"},
+  {tag:"config", q:"Co się dzieje z Dynamic CI Group na formularzu Change (pole CI)?", a:"Automatycznie wypełnia Affected CIs related list wszystkimi powiązanymi CI"},
+  {tag:"config", q:"Jaka opcja w identifier entry pozwala zmienić klasę z Server na Windows Server?", a:"Class Upgrade – bardziej specyficzna klasa w tej samej hierarchii"},
+  {tag:"config", q:"Co to Class Switch w kontekście IRE?", a:"Zmiana klasy CI na inną w różnym branchu hierarchii (np. Hardware → Network)"},
+  {tag:"config", q:"Gdzie w CI Class Manager zmieniamy ikonę dla klasy?", a:"Basic Info tab"},
+  {tag:"config", q:"Gdzie przeglądamy mappings wartości lifecycle legacy → CSDM lifecycle?", a:"Life cycle mappings"},
+  {tag:"config", q:"Jaki jest wynik gdy Managed by Group ustawiony w CI Class Manager (Enterprise IT) vs Technical Service Offering (Windows Support)?", a:"Windows Support wygrywa – Technical Service Offering ma wyższy priorytet niż CI Class Manager"},
+
+  // INGEST
+  {tag:"ingest", q:"Która metoda ingestion zapewnia fastest time to value dla SCCM?", a:"SCCM Service Graph Connector"},
+  {tag:"ingest", q:"Która metoda ingestion minimizes technical debt przy wgrywaniu CI z 3rd party?", a:"Service Graph Connector"},
+  {tag:"ingest", q:"Co robi IntegrationHub ETL vs Import Sets?", a:"IntegrationHub ETL: używa IRE, field-to-field mappings, obsługuje CMDB i non-CMDB tables. Import Sets: stara metoda, wymaga CMDBTransformUtil API dla IRE"},
+  {tag:"ingest", q:"Jaki typ skryptu w Transform Map zapewnia przetwarzanie przez IRE?", a:"onBefore script"},
+  {tag:"ingest", q:"Co się dzieje gdy zmodyfikujesz script transform po instalacji Service Graph Connector?", a:"A skipped change is created – upgrade nie nadpisze twoich customizacji"},
+  {tag:"ingest", q:"Który SGC po customizacji mappings jest supportowany przez kogo?", a:"Customer jest odpowiedzialny za support własnych customizacji SGC"},
+  {tag:"ingest", q:"Dla jakich urządzeń używamy Agent Client Collector (ACC)?", a:"Urządzenia w secure environments + urządzenia łączące się intermittently (nie zawsze w sieci)"},
+  {tag:"ingest", q:"Które ServiceNow solutions tworzą automatyczne relacje między CI Application a Application Service?", a:"Discovery + Service Mapping"},
+  {tag:"ingest", q:"Co to Data Refresh Rules?", a:"Pozwalają niżej-priorytetowemu źródłu update'ować rekordy po określonym czasie bezczynności wyżej-priorytetowego źródła"},
+  {tag:"ingest", q:"Jak skonfigurować autorytatywne źródło dla konkretnej klasy/atrybutu?", a:"Assign priority to each data source in the Reconciliation Rules (niższy numer = wyższy priorytet)"},
+  {tag:"ingest", q:"Dynamic Reconciliation Rule Types (dostępne w wizard)?", a:"Smallest Value + Most Reported (nie: Last Updated, nie: Last Created)"},
+  {tag:"ingest", q:"Gdzie po instalacji SGC Central plugin jest dostępna nowa zakładka?", a:"CMDB Workspace"},
+  {tag:"ingest", q:"Jakie kategorie SGC są dostępne?", a:"Cloud + Observability (między innymi). NIE: DevOps, NIE: Workflow Automation"},
+  {tag:"ingest", q:"Co to IntegrationHub ETL – dwie główne cechy?", a:"1) Integruje 3rd-party data do CMDB lub non-CMDB tables. 2) Używa IRE do przetwarzania danych"},
+  {tag:"ingest", q:"Jak zapobiec duplikatom przy Import Sets z vendor files?", a:"Użyj CMDBTransformUtil API w transform script"},
+  {tag:"ingest", q:"Apache Web Server ID Rule: Class, Config file, Version. Zmieniła się wersja. Co się stanie?", a:"A new Apache Web Server CI is created (version jest criterion attribute – nowa wartość = nowy rekord)"},
+  {tag:"ingest", q:"Reconciliation priority 100 (ServiceNow) vs 300 (SCCM) – kto może update?", a:"ServiceNow (100) może update rekordy SCCM (300). SCCM (300) NIE może update rekordów ServiceNow. Każdy może INSERT nowe rekordy."},
+
+  // GOVERN
+  {tag:"govern", q:"6 metryk CMDB Health Dashboard – wymień je", a:"Stale CIs, Duplicate CIs, Orphan CIs, Required fields, Recommended fields, Audits (Compliance)"},
+  {tag:"govern", q:"Który CMDB Health Dashboard scorecard zawiera Stale CIs, Duplicate CIs, Orphan CIs?", a:"Correctness Scorecard"},
+  {tag:"govern", q:"Który scorecard zawiera Required fields i Recommended fields?", a:"Completeness Scorecard"},
+  {tag:"govern", q:"Który scorecard zawiera Audits (np. patch level)?", a:"Compliance Scorecard"},
+  {tag:"govern", q:"Jakie pole jest używane do obliczania Staleness metric?", a:"Updated (sys_updated_on)"},
+  {tag:"govern", q:"Co jest potrzebne aby generować CMDB Health scores?", a:"Scheduled Jobs dla CMDB Health Dashboard muszą być aktywne"},
+  {tag:"govern", q:"Różnica: Attestation vs Certification policy?", a:"Attestation = potwierdź że CI ISTNIEJE. Certification = zwaliduj/zaktualizuj ATRYBUTY CI"},
+  {tag:"govern", q:"Który Data Manager policy type tworzy zadania z możliwością update'u fields na CI?", a:"Certification"},
+  {tag:"govern", q:"Prerequisite do archiwizacji/usunięcia CI w Data Manager?", a:"CI musi być w statusie Retired + End of Life"},
+  {tag:"govern", q:"Gdzie w CMDB Workspace znaleźć de-dup tasks wygenerowane przez IRE?", a:"Home tab → Important actions tile"},
+  {tag:"govern", q:"Gdzie zarządzać politykami Data Manager (create, publish)?", a:"CMDB Workspace → Management tab"},
+  {tag:"govern", q:"Co generuje 'My Work' tasks w CMDB Workspace dla CI class owners?", a:"CMDB Data Manager"},
+  {tag:"govern", q:"Co zapewnia manageable data volume w CMDB?", a:"Archive Policies (Data Manager)"},
+  {tag:"govern", q:"Jaka konfiguracja jest potrzebna dla Compliance scorecard (patch level)?", a:"Certification Filter + Certification Template + Audit"},
+  {tag:"govern", q:"Preferred way do zarządzania duplikatami?", a:"De-duplication dashboard na CMDB Workspace"},
+  {tag:"govern", q:"Playbooks – co zawierają? (kolejność)", a:"1) Summary of indicator → 2) Overview of problem → 3) Importance of addressing → 4) Fix or Improve"},
+  {tag:"govern", q:"Co mogą zrobić Playbooks? (dwie korzyści)", a:"Offers insight into downstream impacts + Offers remediation options to address poorly performing metrics. NIE automatycznie naprawiają!"},
+  {tag:"govern", q:"Który governance tool usuwa dane nieaktualne/nieprzydatne?", a:"CMDB Data Manager"},
+  {tag:"govern", q:"Który group reference field ustawić w Data Manager policy aby użyć wartości z CI Class Manager?", a:"Managed By Group"},
+  {tag:"govern", q:"Duplicate CI Remediator: jeden CI z Discovery (nowe IP), drugi z manual (relacja do biznesu) – jak rozwiązać?", a:"Retain discovered CI + merge relationship from manually imported CI"},
+
+  // CSDM
+  {tag:"csdm", q:"7 domen CSDM 5 – wymień", a:"Foundation, Ideation & Strategy, Design & Planning, Build & Integration, Service Delivery, Service Consumption, Manage Portfolio"},
+  {tag:"csdm", q:"Które obiekty należą do Foundation domain?", a:"Company, Business Unit, Department, Location, User, Group, Contract. WAŻNE: NIE są CI!"},
+  {tag:"csdm", q:"Co to Business Service w CSDM?", a:"Jak klient/biznes widzi serwis. Table: cmdb_ci_service_business. Single level (nie hierarchia). Used for IPC."},
+  {tag:"csdm", q:"Technology Management Service (dawna nazwa i tabela)?", a:"Dawniej: Technical Service. Table: cmdb_ci_service_technical. Zarządza technologią od strony provider."},
+  {tag:"csdm", q:"Service Instance (dawna nazwa i tabela)?", a:"Dawniej: Application Service. Table: cmdb_ci_service_auto. Deployed, operational instance."},
+  {tag:"csdm", q:"Jakie są 3 typy Application Service creation (metody)?", a:"Top-Down Discovery (Service Mapping), Manual, Tag-Based, Calculated, Dynamic CI Group (query-based)"},
+  {tag:"csdm", q:"CSDM Implementation stages (step-wise approach)?", a:"Foundation → Crawl → Walk → Run → Fly"},
+  {tag:"csdm", q:"3 podejścia do CSDM implementation?", a:"Outcome Centric, Domain Centric, Step-wise (Crawl/Walk/Run/Fly)"},
+  {tag:"csdm", q:"CSDM is NOT...", a:"Nie jest produktem/SKU, nie jest kodem do instalacji, nie jest set of reports, nie jest automatic fix"},
+  {tag:"csdm", q:"Które tabele CSDM są 'operational' (używane w ITSM IPC)?", a:"Business Service, Technology Management Service, Application Service (Service Instances) – Service Delivery domain"},
+  {tag:"csdm", q:"Które tabele NIE są targetami ITSM (Incident/Change/Problem)?", a:"Design & Planning (Business Capabilities, Business Applications) + Build & Integration – są do planowania/architektury"},
+  {tag:"csdm", q:"Co to Dynamic CI Group w CSDM?", a:"Dynamiczne grupowanie CI na podstawie CMDB Groups queries. Może działać jako Query-Based Application Service LUB grouping dla Technical Service."},
+  {tag:"csdm", q:"Co nowego w CSDM 5?", a:"Nowa domena: Ideation & Strategy. SBOM. Service Instances (sibling Application Services). AI Data Model. Label changes: Tech Mgmt Service (dawniej Technical Service), Service Instance (dawniej Application Service)"},
+  {tag:"csdm", q:"Co to Attestation w kontekście lifecycle CSDM?", a:"Właściciel CI potwierdza (acknowledgement) że CI nadal istnieje – NIE waliduje atrybutów"},
+  {tag:"csdm", q:"CSDM compliance scorecard – co musi być skonfigurowane?", a:"Certification Filter + Certification Template + Audit"},
+
+  // INSIGHT
+  {tag:"insight", q:"Gdzie można tworzyć Natural Language Query (NLQ)?", a:"CMDB Workspace (CMDB Search)"},
+  {tag:"insight", q:"Do czego służy CMDB Query Builder?", a:"Budowanie complex queries wieloklasowych, z relacjami, CMDB 360 saved queries, dla raportowania i PA"},
+  {tag:"insight", q:"Co to Unified Map?", a:"Widok zależności (dependency view) – pokazuje jak CIs są połączone z serwisami"},
+  {tag:"insight", q:"Jakie są outcomes używania Playbooks?", a:"Problem Overview + Problem Analysis (documencja + guidance do naprawy). NIE: automated scripts"},
+  {tag:"insight", q:"Gdzie są dostępne Playbooks?", a:"CMDB Data Foundations Dashboard (dla CMDB issues) + CMDB Health Dashboard Playbooks"},
+  {tag:"insight", q:"Jaki jest business value CMDB?", a:"Impact analysis przy incydentach, redukcja ryzyka zmian, MTTR reduction, zasilanie ITSM/ITAM/ITOM/SPM"},
+];
+
+const questions = [
+  // CONFIGURATION — ET = ExamTopics (z Twojego pliku), MY = autorskie
+  {id:1,domain:"config",source:"et",type:"multi",q:"Które grupy są synchronizowane na CI z Technology Management Service Offering powiązanego z Dynamic CI Group? (wybierz dwa)",opts:["Approval Group","Managed by Group","Support Group","Owned by Group"],correct:[1,2],explain:"Managed by Group (B) i Support Group (C) są synchronizowane z CI poprzez Technical Service Offering → Dynamic CI Group."},
+  {id:2,domain:"config",source:"et",type:"single",q:"Jakie są MINIMALNE role potrzebne do dodania custom CI class?",opts:["cmdb_inst_admin + personalize_form","itil_admin + personalize_form","data_classification_admin + personalize_dictionary","sn_cmdb_admin + personalize_dictionary"],correct:[3],explain:"Minimalne wymagane role to sn_cmdb_admin + personalize_dictionary."},
+  {id:3,domain:"config",source:"et",type:"single",q:"Jaka jest relacja między Application a Server?",opts:["Application > Used by :: Uses > Server","Application > Uses :: Used by > Server","Application > Runs :: Runs On > Server","Application > Runs on :: Runs > Server"],correct:[3],explain:"Application > Runs on :: Runs > Server – aplikacja 'runs on' serwerze, serwer 'runs' aplikację."},
+  {id:4,domain:"config",source:"et",type:"single",q:"Jak Configuration Analyst może AUTOMATYCZNIE zsynchronizować pole 'Assigned to' między CI a Asset?",opts:["Użyć Asset-CI Field Mapping module do stworzenia reguły","Ukryć pole na asset i dot-walk do CI","Napisać business rule z scriptem"],correct:[0],explain:"Asset-CI Field Mapping module jest właściwym narzędziem do konfiguracji automatycznej synchronizacji pól."},
+  {id:5,domain:"config",source:"et",type:"multi",q:"Zalecane praktyki przy tworzeniu nowej CI class dla IoT Sensor? (wybierz dwa)",opts:["Dodaj klasę pod odpowiednią klasą nadrzędną","Modyfikuj istniejącą klasę","Sprawdź najpierw CMDB CI Class Models store app czy klasa już istnieje","Usuń nieużywaną klasę i zamień"],correct:[0,2],explain:"(A) Dodaj pod właściwym parentem + (C) sprawdź w store app. Modyfikowanie istniejącej klasy (B) i usuwanie (D) to złe praktyki."},
+  {id:6,domain:"config",source:"et",type:"single",q:"Które pole na Incident form jest automatycznie populowane po wybraniu CI z odpowiednią support group?",opts:["Support Group","Approval Group","Change Group","Assignment Group"],correct:[3],explain:"Assignment Group na Incident jest automatycznie populowane z CI. Support Group na CI mapuje się do Assignment Group na Incident."},
+  {id:7,domain:"config",source:"et",type:"single",q:"Jaka jest relacja między Application Server [cmdb_ci_app_server] a Application [cmdb_ci_appl]?",opts:["Many-to-one","One-to-one","One-to-many","Many-to-many"],correct:[3],explain:"Many-to-many: jeden serwer może hostować wiele aplikacji, jedna aplikacja może działać na wielu serwerach."},
+  {id:8,domain:"config",source:"et",type:"single",q:"Który tab w sekcji Attributes CI Class Manager pokazuje atrybuty stworzone TYLKO dla klasy Windows Server?",opts:["All","Derived","Added","Child"],correct:[2],explain:"'Added' tab pokazuje atrybuty stworzone bezpośrednio dla tej konkretnej klasy."},
+  {id:9,domain:"config",source:"et",type:"multi",q:"Jak Asset Manager zapewni automatyczną synchronizację Asset i CI records? (wybierz dwa)",opts:["Zapewnij one-to-one physical mapping","Uruchamiaj scheduled jobs po godzinach","Business rule update Asset fields on change na CI table musi być aktywna","Business rule update CI fields on change na Asset table musi być aktywna"],correct:[2,3],explain:"Obie business rules (C i D) muszą być aktywne dla synchronizacji w obie strony."},
+  {id:10,domain:"config",source:"et",type:"single",q:"Gdzie CMDB Administrator wyznacza Principal Classes?",opts:["CI Class Manager","CMDB Workspace","CMDB Data Manager","System Properties"],correct:[0],explain:"Principal Classes są ustawiane w CI Class Manager (Basic Info tab)."},
+  {id:11,domain:"config",source:"et",type:"single",q:"Który system property musi być włączony dla CMDB 360/Multisource CMDB?",opts:["glide.identification_engine.multisource_enabled","glide.identification_engine.multisource.query.max.limit","glide.identification_engine.multisource_non_cmdb_ci_enabled","glide.identification_engine.multisource_cmdb_ci_enabled"],correct:[0],explain:"glide.identification_engine.multisource_enabled jest właściwym property."},
+  {id:12,domain:"config",source:"et",type:"single",q:"Gdzie centralnie zbierać: atrybuty, IRE rules, suggested relationships dla klas?",opts:["CI Class Manager","CI Identifiers","CMDB Workspace","CMDB Data Manager"],correct:[0],explain:"CI Class Manager to centralne miejsce dla wszystkich tych informacji."},
+  {id:13,domain:"config",source:"et",type:"single",q:"Jak Health Inclusion Rules są wykorzystywane przez IRE?",opts:["Aby zawęzić zakres CI uwzględnianych w procesie identyfikacji","Aby zredukować dane wgrywane do CMDB","Aby uzgodnić konkretne atrybuty na podstawie źródeł danych"],correct:[0],explain:"Health Inclusion Rules zawężają zakres (scope) CIs w procesie identyfikacji przez IRE."},
+  {id:14,domain:"config",source:"et",type:"single",q:"CMDB Administrator zarządza grupami zarówno w CI Class Manager (Managed by = Enterprise IT) jak i w Technical Service Offering (Managed by = Windows Support). Jaki będzie Managed By Group na CI?",opts:["Windows Support","Enterprise IT Services","Change Management Team"],correct:[0],explain:"Technical Service Offering ma wyższy priorytet niż CI Class Manager – Windows Support wygrywa."},
+  {id:15,domain:"config",source:"et",type:"single",q:"Jakie jest best practice dla Custom CMDB table prefix?",opts:["ci_cmdb","cmdb_ci","u_cmdb_ci","u_ci_cmdb"],correct:[2],explain:"u_cmdb_ci_ to właściwy prefix dla custom CMDB tables – zapobiega technical debt."},
+  {id:16,domain:"config",source:"et",type:"single",q:"Tomcat identification rule ma: Class + Install Directory. Jeśli brak dopasowania, ma próbować Application rule. Co musi być zaznaczone?",opts:["Allow fallback to parent's rules","Independent","Applies to","Criterion attributes"],correct:[0],explain:"'Allow fallback to parent's rules' pozwala użyć reguły klasy nadrzędnej gdy brak dopasowania."},
+  {id:17,domain:"config",source:"et",type:"multi",q:"Jakie role są potrzebne do dodawania/usuwania klas z Principal Class filter? (wybierz dwa)",opts:["personalize_dictionary","sn_csdm_admin","sn_cmdb_admin","cmdb_query_builder"],correct:[0,2],explain:"personalize_dictionary (A) + sn_cmdb_admin (C) są wymagane."},
+
+  // INGEST
+  {id:18,domain:"ingest",source:"et",type:"single",q:"CMDB 360: Server class – Dynamic Reconciliation Rule = Largest Value dla RAM. Sources: Tivoli=4096, ServiceNow=4096, LANDesk=2048, Altiris=8192. Jaka wartość trafi do CMDB?",opts:["4096 MB","8192 MB","2048 MB"],correct:[1],explain:"Largest Value dla Server class → 8192 MB (Altiris). Gdyby to był Windows Server (Most Reported), byłoby 4096 (zgłoszone przez 2 źródła)."},
+  {id:19,domain:"ingest",source:"et",type:"single",q:"Zalecana metoda importu do CMDB z użyciem IRE (minimize duplicates, respecting authorization)?",opts:["IntegrationHub ETL","Table API (REST/SOAP)","Import Sets i Transform Maps"],correct:[0],explain:"IntegrationHub ETL jest rekomendowaną metodą – automatycznie używa IRE."},
+  {id:20,domain:"ingest",source:"et",type:"single",q:"Jak kontrolować które źródło danych jest authoritative dla konkretnej klasy/atrybutu?",opts:["Przypisz priority w reconciliation rules","Ręcznie uruchamiaj source updates w odpowiedniej kolejności","Skonfiguruj data refresh rules z określonym czasem","Przypisz run order w identification rules"],correct:[0],explain:"Priority w Reconciliation Rules określa autorytatywne źródło. Niższy numer = wyższy priorytet."},
+  {id:21,domain:"ingest",source:"et",type:"multi",q:"Dostępne Dynamic Rule Types w 'Create Reconciliation Rule' wizard? (wybierz dwa)",opts:["Last Updated","Smallest Value","Last Created","Most Reported"],correct:[1,3],explain:"Smallest Value (B) + Most Reported (D). NIE: Last Updated, NIE: Last Created."},
+  {id:22,domain:"ingest",source:"et",type:"single",q:"Identification rule dla Hardware ma: Serial Number (prio 100), Hardware serial_number (200), Hardware name (300), Network Adapter mac+name (400). CI1 name match istnieje. CI2 IP match istnieje. Co się stanie?",opts:["CI1 inserted as new, CI2 updated","CI1 updated with matching, CI2 inserted as new","Oba updated","Oba inserted as new"],correct:[1],explain:"Criterion: serial_number(100), serial_number(200), name(300), mac_address+name(400). Name match pasuje do priority 300 → CI1 updated. IP nie jest w criterion → CI2 inserted."},
+  {id:23,domain:"ingest",source:"et",type:"single",q:"Server [cmdb_ci_server] → reklasyfikowany do Linux [cmdb_ci_linux_server] przez Discovery. Jaka operacja?",opts:["Class Upgrade","Class Downgrade","Class Switch"],correct:[0],explain:"Class Upgrade – reklasyfikacja do bardziej szczegółowej klasy w tej samej hierarchii."},
+  {id:24,domain:"ingest",source:"et",type:"single",q:"Firma nie ma licencji ITOM Discovery ale chce reconciliation rules dla 5 discovery sources. Czy może używać IRE reconciliation rules?",opts:["Trzeba kupić ITOM Discovery","CMDB 360 jest platform product – można od razu","IRE reconciliation rules działają niezależnie od CMDB 360"],correct:[2],explain:"IRE reconciliation rules działają niezależnie od tego czy CMDB 360 jest włączony."},
+  {id:25,domain:"ingest",source:"et",type:"single",q:"Które ServiceNow solution tworzy automatyczne relacje między CI?",opts:["IntegrationHub ETL","Discovery","Workflow Studio","Service Mapping"],correct:[1],explain:"Discovery automatycznie tworzy relacje (np. Application Runs on Server). Service Mapping też (D), ale primary answer to Discovery."},
+  {id:26,domain:"ingest",source:"et",type:"single",q:"Administrator importował dane z 3rd party przez Service Graph Connector i chce przejrzeć field-to-field mappings. Gdzie?",opts:["Integration Hub","IntegrationHub ETL","CMDB Integrations Dashboard"],correct:[1],explain:"IntegrationHub ETL pokazuje field-to-field mappings dla SGC imports."},
+  {id:27,domain:"ingest",source:"et",type:"multi",q:"Cechy/funkcje IntegrationHub ETL? (wybierz dwa)",opts:["Integruje 3rd-party data do CMDB lub non-CMDB tables","Używa IRE do przetwarzania","Importuje Microsoft SCCM/Intune do CMDB","Wykonuje discovery data collection"],correct:[0,1],explain:"(A) Integruje dane 3rd-party w tym non-CMDB tables + (B) używa IRE. (C) to rola SGC/ACC. (D) to Discovery."},
+  {id:28,domain:"ingest",source:"et",type:"single",q:"Najszybszy czas do wartości dla SCCM data do CMDB?",opts:["Import Sets","Service Graph Connectors","Agent Client Collector","IntegrationHub ETL"],correct:[1],explain:"SCCM Service Graph Connector = fastest time to value (pre-built connector)."},
+  {id:29,domain:"ingest",source:"et",type:"single",q:"Administrator zmienił query dla SCCM Service Graph Connector. Co się stanie przy kolejnych upgradach?",opts:["Scheduled Jobs będą wymagały konfiguracji","Updates dla SCCM SGC będą pomijane podczas upgrade","Data Source dla SCCM SGC zostanie nieaktywna"],correct:[1],explain:"Customizowane elementy SGC są pomijane (skipped) podczas upgrade – skipped change is created."},
+  {id:30,domain:"ingest",source:"et",type:"single",q:"Gdzie po instalacji SGC Central plugin pojawia się nowa zakładka?",opts:["Discovery Admin Workspace","CMDB Workspace","Service Graph Connector Workspace"],correct:[1],explain:"SGC Central tab jest dostępny w CMDB Workspace."},
+  {id:31,domain:"ingest",source:"et",type:"single",q:"Firma chce Dynamic Reconciliation Rules. Co musi być włączone?",opts:["CMDB Data Manager","CMDB 360/Multisource CMDB","CMDB Workspace","Reconciliation Rules"],correct:[1],explain:"Dynamic Reconciliation Rules wymagają włączonego CMDB 360/Multisource CMDB."},
+  {id:32,domain:"ingest",source:"et",type:"multi",q:"Common use cases dla Agent Client Collector (ACC)? (wybierz dwa)",opts:["Network devices w DMZ","Urządzenia łączące się intermittently","Serwery w data center","Urządzenia w secure environments"],correct:[1,3],explain:"ACC jest używany dla: (B) urządzeń łączących się intermittently + (D) urządzeń w secure environments."},
+
+  // GOVERN
+  {id:33,domain:"govern",source:"et",type:"single",q:"Który CMDB Health Dashboard scorecard pokazuje informacje o Stale CIs?",opts:["Correctness","Compliance","Completeness"],correct:[0],explain:"Correctness scorecard zawiera: Stale CIs, Duplicate CIs, Orphan CIs."},
+  {id:34,domain:"govern",source:"et",type:"single",q:"Administrator chce usunąć Linux Servers nieaktualizowane 6 miesięcy. Jaka akcja w Data Manager?",opts:["Stwórz business rule","Stwórz archive policy","Stwórz scheduled job"],correct:[1],explain:"Archive Policy w Data Manager jest właściwym narzędziem do zarządzania cyklem życia CIs."},
+  {id:35,domain:"govern",source:"et",type:"single",q:"Co jest potrzebne do wyświetlania Compliance scorecard (patch level) na CMDB Health Dashboard?",opts:["Certification Policies, Data Filters, Scheduled Jobs","Stale, Orphan, Duplicate","Certification Filter, Certification Template, Audit","Technical Service Offerings, Dynamic CI Groups, CMDB Groups"],correct:[2],explain:"Certification Filter + Certification Template + Audit są wymagane dla Compliance scorecard."},
+  {id:36,domain:"govern",source:"et",type:"single",q:"Który scorecard pokazuje: Duplicate CI, Orphan CI i Stale CI metrics?",opts:["Completeness","Compliance","Correctness"],correct:[2],explain:"Correctness Scorecard zawiera Duplicate, Orphan i Stale CIs."},
+  {id:37,domain:"govern",source:"et",type:"single",q:"Różnica między Data Certification a Attestation?",opts:["Attestation wymaga poprawy atrybutów, Certification potwierdza istnienie CI","Attestation może być scheduled, Certification nie","Attestation potwierdza że CI istnieje, Certification wymaga walidacji/update atrybutów","Attestation dla grup, Certification tylko dla indywidualnych"],correct:[2],explain:"Attestation = CI istnieje (acknowledgement). Certification = waliduj i popraw atrybuty CI."},
+  {id:38,domain:"govern",source:"et",type:"multi",q:"Obszary data quality w CMDB Health Dashboard? (wybierz dwa)",opts:["Missing CIs","State CIs","Duplicate CIs","Downgraded CIs","Upgraded CIs"],correct:[1,2],explain:"Stale CIs (B) i Duplicate CIs (C) są mierzone w CMDB Health Dashboard (Correctness scorecard)."},
+  {id:39,domain:"govern",source:"et",type:"single",q:"60,000 serwerów. Duplicate: 59000/60000. Orphan: 45000/50000. Co wyjaśnia różnicę w scope (60k vs 50k)?",opts:["Duplicate metric ma CMDB Group dla Server","Duplicate metric ma Health Inclusion Rule","Orphan metric ma Health Inclusion Rule","Orphan metric ma CMDB Group"],correct:[2],explain:"Orphan metric ma Health Inclusion Rule zawężającą scope do 50,000 zamiast 60,000."},
+  {id:40,domain:"govern",source:"et",type:"single",q:"Który CMDB management tool generuje tasks w zakładce 'My Work' w CMDB Workspace?",opts:["CMDB Data Manager","De-duplication templates","CMDB Health Dashboard"],correct:[0],explain:"CMDB Data Manager generuje tasks widoczne w My Work tab."},
+  {id:41,domain:"govern",source:"et",type:"single",q:"Co zapewnia manageable data volume w CMDB?",opts:["Scheduled Jobs","Archive Policies","Business Rules"],correct:[1],explain:"Archive Policies (w Data Manager) są mechanizmem zarządzania wolumenem danych."},
+  {id:42,domain:"govern",source:"et",type:"single",q:"Co jest potrzebne do generowania CMDB Health scores?",opts:["Nic – są obliczane domyślnie","Plugin CMDB health calculation musi być zainstalowany","Scheduled jobs dla CMDB Health Dashboard muszą być aktywne"],correct:[2],explain:"Scheduled jobs dla Health Dashboard muszą być aktywne."},
+  {id:43,domain:"govern",source:"et",type:"single",q:"Konfiguracja Data Manager policy – który group reference field ustawić gdy chcemy użyć wartości z CI Class Manager?",opts:["Change Group","Approval Group","Managed By Group","Support Group"],correct:[2],explain:"Managed By Group jest group reference field używanym przez Data Manager do powiązania z CI Class Manager."},
+  {id:44,domain:"govern",source:"et",type:"single",q:"Gdzie Configuration Management team znajdzie de-dup tasks z IRE w CMDB Workspace?",opts:["Important actions tile – Home tab","CMDB feature adoption – Insight tab","Total status – My Work tab"],correct:[0],explain:"IRE de-dup tasks są w Home tab → Important actions tile."},
+  {id:45,domain:"govern",source:"et",type:"single",q:"Który typ Data Manager policy tworzy tasks do update'u fields na CI record?",opts:["Compliance","Certification","Attestation","Audit"],correct:[1],explain:"Certification policy tworzy tasks z możliwością modyfikacji atrybutów CI."},
+  {id:46,domain:"govern",source:"et",type:"single",q:"Jak Playbooks mogą pomóc administratorowi z problemami w CMDB?",opts:["Można je zainstalować aby automatycznie naprawić problemy","Mogą pomóc analizować i naprawiać problemy","Automatycznie śledzą CMDB issues i outputują metryki"],correct:[1],explain:"Playbooks pomagają ANALIZOWAĆ i NAPRAWIAĆ – nie naprawiają automatycznie."},
+  {id:47,domain:"govern",source:"et",type:"multi",q:"Co zawiera Playbook? (wybierz dwa)",opts:["Root Cause","Automated Remediations","Problem Analysis","Problem Overview"],correct:[2,3],explain:"Problem Analysis (C) + Problem Overview (D) to typy dokumentacji w Playbooks."},
+  {id:48,domain:"govern",source:"et",type:"single",q:"Data center ma wiele serwerów. Administrator chce potwierdzić że WSZYSTKIE istnieją. Jaki typ Data Manager policy?",opts:["Attestation","Certification","Promotion","Verification"],correct:[0],explain:"Attestation = zadanie dla właściciela potwierdzające istnienie CI."},
+  {id:49,domain:"govern",source:"et",type:"single",q:"Prerequisite dla archiwizacji/usunięcia CI w Data Manager (baseline policies)?",opts:["Być fully operational i w użyciu","Być oznaczony jako critical","Być Retired i w End of Life","Być oznaczony jako inactive"],correct:[2],explain:"CI musi być Retired + End of Life przed archiwizacją/usunięciem."},
+  {id:50,domain:"govern",source:"et",type:"single",q:"Duplicate CIs: jeden z Discovery (nowe IP), drugi z manual import (relacja do business app). Jak rozwiązać w Duplicate CI Remediator?",opts:["Zachowaj manual, usuń discovered","Merge automatycznie – wszystkie atrybuty z discovered","Zachowaj discovered CI, merge relationship z manual CI","Zachowaj discovered, usuń manual"],correct:[2],explain:"Retain discovered CI (ma najnowsze IP) + merge relationship from manually imported CI (ma wartościową relację biznesową)."},
+
+  // CONFIG ET — brakujące (Topic 1 Q19-Q38)
+  {id:101,domain:"config",source:"et",type:"multi",q:"Jakie metody mogą być użyte do tworzenia CMDB Groups? (wybierz dwa)",opts:["Tag-based queries","Scripted queries","Saved queries","Encoded queries"],correct:[2,3],explain:"Saved queries (C) + Encoded queries (D). NIE: Tag-based, NIE: Scripted."},
+  {id:102,domain:"config",source:"et",type:"single",q:"Jak można automatycznie uzupełnić Support Group na CI?",opts:["Technology Management Service Offering (Technical Service Offering)","Technology Management Service (Technical Service)","CI Class Manager","Dynamic CI group"],correct:[0],explain:"Tech Service Offering automatycznie sync'uje grupy (Managed by, Support Group, Change Group) na CIs."},
+  {id:103,domain:"config",source:"et",type:"single",q:"Gdzie zmienić ikonę dla klasy UNIX Server w CI Class Manager?",opts:["CI List","Basic Info","Attributes","Suggested Relationships"],correct:[1],explain:"Basic Info tab w CI Class Manager umożliwia zmianę ikony klasy."},
+  {id:104,domain:"config",source:"et",type:"single",q:"Gdzie przejrzeć legacy status values i ich odpowiedniki w CSDM life cycle stage?",opts:["Life cycle choice list","Life cycle mappings","Life cycle properties"],correct:[1],explain:"Life cycle mappings pokazuje mapowanie między starymi statusami a CSDM lifecycle stages."},
+  {id:105,domain:"config",source:"et",type:"single",q:"Co się dzieje z Dynamic CI Group gdy jest wskazana w polu CI na formularzu Change?",opts:["Wyświetla CIs w Impacted Services related list","Oblicza impact dla Dynamic CI Group","Wyświetla wszystkie CIs w Affected CIs related list"],correct:[2],explain:"Dynamic CI Group na Change form → Affected CIs related list wypełniana wszystkimi CI z grupy."},
+  {id:106,domain:"config",source:"et",type:"single",q:"Jak ustawić klasę jako Principal Class w CI Class Manager (Basic Info tab)?",opts:["Zaznacz checkbox Principal Class","Kliknij UI Action button Principal Class","Wybierz 'Yes' z choice list Principal Class"],correct:[0],explain:"Checkbox Principal Class na Basic Info tab ustawia klasę jako Principal."},
+  {id:107,domain:"config",source:"et",type:"multi",q:"Które działania zespół CMDB podejmuje aby rozwiązać problem duplikatów z wielu źródeł? (wybierz dwa)",opts:["Pozwól każdemu źródłu definiować własną CI class","Implementuj identification and reconciliation rules","Stwórz custom script do ręcznej korekty","Użyj CI Class Manager do standaryzacji klas"],correct:[1,3],explain:"(B) Identification & reconciliation rules + (D) CI Class Manager do standaryzacji."},
+  {id:108,domain:"config",source:"et",type:"single",q:"Która funkcja CI Class Manager pomaga CI Class Ownerowi streamline zarządzanie klasą Windows Server?",opts:["Pinned Classes","CI Favorites","Search CI Classes"],correct:[0],explain:"Pinned Classes pozwala przypiąć konkretną klasę do szybkiego dostępu."},
+  {id:109,domain:"config",source:"et",type:"single",q:"Które pole na Change Request form musi być wypełnione Dynamic CI Group do implementacji change na wielu CIs?",opts:["Configuration Item","Business Service","Service Offering"],correct:[0],explain:"Pole Configuration Item (CI) na Change Request form przyjmuje Dynamic CI Group."},
+  {id:110,domain:"config",source:"et",type:"single",q:"Identification rule dla aplikacji – która opcja criterion attribute jest najlepsza gdy ta sama aplikacja może być zainstalowana kilka razy na tym samym serwerze?",opts:["Version","Configuration File Name","Port","Configuration File Path","Class"],correct:[3],explain:"Configuration File Path – unikalnie identyfikuje każdą instalację tej samej aplikacji na tym samym serwerze."},
+  {id:111,domain:"config",source:"et",type:"single",q:"Krok po kliknięciu 'Enable Life Cycle Sync'?",opts:["Rozwiąż niekompletne mapowania w Discrepancy Report","Napraw wartości w Life Cycle Stage","Aktywuj CSDM Life Cycle field mappings"],correct:[0],explain:"Po Enable Life Cycle Sync → Discrepancy Report pokazuje niekompletne mapowania do rozwiązania."},
+  {id:112,domain:"config",source:"et",type:"single",q:"Jak dodać nową CI class i zintegrować z istniejącą strukturą CMDB?",opts:["Użyj Service Catalog","Edytuj istniejącą CI class","Stwórz nową CI class w CI Class Manager z table inheritance od parent class","Stwórz nową CI class bez inheritance"],correct:[2],explain:"CI Class Manager + inheritance od parent class = właściwa metoda integracji z hierarchią CMDB."},
+  {id:113,domain:"config",source:"et",type:"multi",q:"Zalecane rozwiązania przy ingestion custom CIs do CMDB (best practice, minimalize tech debt)? (wybierz dwa)",opts:["Repurpose base CI class i rename attributes","Extend existing CI class table","Install/upgrade CMDB CI Class Models store app","Extend Asset class table"],correct:[1,2],explain:"(B) Extend existing CI class + (C) sprawdź CMDB CI Class Models store app."},
+  {id:114,domain:"config",source:"et",type:"multi",q:"Które grupy są automatycznie synchronizowane na CIs z Technology Management Offerings i dynamic CI groups? (wybierz dwa)",opts:["Change group","Approval group","Support group","CMDB group"],correct:[0,2],explain:"Change group (A) + Support group (C) są synchronizowane przez Tech Management Offerings."},
+
+  // INGEST ET — brakujące (Topic 2 Q9, Q11, Q12 + Q13-Q31 z pliku 2)
+  {id:115,domain:"ingest",source:"et",type:"single",q:"Apache Web Server Identification Rule: Class + Config file + Version. Wersja się zmieniła. Co się stanie?",opts:["Istniejące CI zostanie uzgodnione i wersja zaktualizowana","Błąd duplikacji","CI zostanie reklasyfikowane jako Web Server","Nowe Apache Web Server CI zostanie stworzone"],correct:[3],explain:"Version jest criterion attribute – nowa wartość = nowy rekord CI."},
+  {id:116,domain:"ingest",source:"et",type:"single",q:"Jak utrzymać non-discoverable attributes (np. warranty expiration dates) na hardware CIs?",opts:["Stwórz nową CI class dla non-discoverable attrs","Użyj CMDB Reconciliation Engine","Użyj scheduled data import z external source"],correct:[2],explain:"Scheduled data import z external source zapewnia regularne aktualizacje non-discoverable attributes."},
+  {id:117,domain:"ingest",source:"et",type:"single",q:"Które są prawdziwe dla Reconciliation Rules (ServiceNow prio 100, Altiris 200, SCCM 300)? (wybierz dwa)",opts:["SCCM może update any record bo ma najwyższy numer","ServiceNow może insert nowe rekordy ale nie może update rekordów Altiris/SCCM","Altiris może update rekordy inserted by SCCM","SCCM może być inserted jako nowe rekordy"],correct:[2,3],explain:"(C) Altiris (200) ma wyższy priorytet niż SCCM (300) – może update. (D) Każde źródło może INSERT nowe rekordy niezależnie od priorytetu."},
+  {id:118,domain:"ingest",source:"et",type:"single",q:"Konfiguracja pozwalająca niżej-priorytetowemu źródłu update records po określonym czasie nieaktywności wyżej-priorytetowego źródła?",opts:["Data Refresh Rules","Reconciliation Rules","Health Inclusion Rules","Identification Rules"],correct:[0],explain:"Data Refresh Rules umożliwiają niższemu źródłu przejąć aktualizacje gdy wyższe jest nieaktywne."},
+  {id:119,domain:"ingest",source:"et",type:"single",q:"Server class – Disk Space Smallest Value rule. Windows Server class – Disk Space Most Reported rule. Sources: 80,75,75,50 GB. Jaka wartość dla Windows Server?",opts:["80","75","50"],correct:[1],explain:"Most Reported dla Windows Server: 75 GB jest zgłoszone przez 2 źródła – wygrywa."},
+  {id:120,domain:"ingest",source:"et",type:"multi",q:"Które ServiceNow solutions automatycznie tworzą relacje między CI Applications w Application Service? (wybierz dwa)",opts:["IntegrationHub ETL","Event Management","Discovery","Service Mapping","Data Manager"],correct:[2,3],explain:"Discovery (C) + Service Mapping (D) automatycznie tworzą relacje Application → Server."},
+
+  // GOVERN ET — brakujące (Topic 3 Q32-Q58 z pliku 3)
+  {id:121,domain:"govern",source:"et",type:"multi",q:"Jak CMDB management tools w governance pillar pomagają zarządzać CIs? (wybierz dwa)",opts:["Reduced hardware costs","Gain visibility and control","Assist integration choices","Enhanced Service Management operations"],correct:[1,3],explain:"(B) Gain visibility and control + (D) Enhanced Service Management operations."},
+  {id:122,domain:"govern",source:"et",type:"multi",q:"Jakie typy policies można stworzyć w CMDB Data Manager? (wybierz dwa)",opts:["Retire","Reconciliation","De-duplication","Archive"],correct:[0,3],explain:"Retire (A) + Archive (D) to typy polityk Data Manager."},
+  {id:123,domain:"govern",source:"et",type:"multi",q:"Domyślne grupy dostępne przy konfiguracji Data Manager policy (Assignment type = User Group Field)? (wybierz dwa)",opts:["Owned by Group","Assignment Group","Managed By Group","Support Group"],correct:[2,3],explain:"Managed By Group (C) + Support Group (D) są domyślnie dostępne."},
+  {id:124,domain:"govern",source:"et",type:"single",q:"Która rola jest odpowiedzialna za accuracy i completeness danych CI w CMDB implementation?",opts:["CMDB Architect","IT Asset Manager","Configuration Manager","Service Owner"],correct:[2],explain:"Configuration Manager jest odpowiedzialny za jakość i dokładność danych CI."},
+  {id:125,domain:"govern",source:"et",type:"multi",q:"Data filter: Table=Server, OS contains 'Server' OR 'Linux'. Które OS są objęte? (wybierz dwa)",opts:["Linux CentOS","AIX","Windows Server 2022 Datacenter","Windows 2019 Datacenter"],correct:[0,2],explain:"Linux CentOS (A) – zawiera 'Linux'. Windows Server 2022 Datacenter (C) – zawiera 'Server'."},
+  {id:126,domain:"govern",source:"et",type:"single",q:"Który scorecard śledzi CIs z brakującymi kluczowymi danymi?",opts:["Correctness","Completeness","Compliance"],correct:[1],explain:"Completeness scorecard: Required fields + Recommended fields – śledzi brakujące atrybuty."},
+  {id:127,domain:"govern",source:"et",type:"single",q:"Jak administrator może remediować wiele podobnych de-dup tasks hurtowo?",opts:["Duplicate CI Remediator Wizard","Custom de-duplication background script","De-duplication tasks ręcznie","De-duplication template"],correct:[3],explain:"De-duplication template umożliwia bulk remediation wielu podobnych duplikatów."},
+  {id:128,domain:"govern",source:"et",type:"single",q:"Jaki jest domyślny czas trwania Staleness metric w CMDB Health Dashboard?",opts:["30 dni","24 godziny","7 dni","60 dni"],correct:[3],explain:"Domyślny czas staleness to 60 dni (po tym czasie CI jest uznawany za stale)."},
+  {id:129,domain:"govern",source:"et",type:"single",q:"Jak Configuration Manager uzyskać score dla regionally relevant CIs na Health Dashboard?",opts:["Aktywuj opcję 'Group scores by region'","Dostosuj scheduled jobs","Stwórz CMDB groups z type 'health' per region"],correct:[2],explain:"CMDB Groups z type 'health' per region filtrują CIs w Health Dashboard."},
+  {id:130,domain:"govern",source:"et",type:"single",q:"Jak administrator zapewnia data quality dla CIs w CMDB?",opts:["Data Quality Scheduled Job","CMDB Audit Business Rule","CMDB Workspace","Data Quality Business Rule"],correct:[2],explain:"CMDB Workspace jest głównym narzędziem do zarządzania jakością danych CMDB."},
+  {id:131,domain:"govern",source:"et",type:"single",q:"Duplicate metric: 59000/60000. Co oznacza '60000' w tym kontekście?",opts:["1000 rekordów jest w scope","60000 rekordów jest w scope","59000 Linux i 60000 Windows","59000 rekordów jest w scope"],correct:[1],explain:"Liczba po '/' = total in scope (Evaluated). 59000 = Healthy. 60000 = total evaluated for this metric."},
+  {id:132,domain:"govern",source:"et",type:"single",q:"Co trzeba zrobić aby zacząć używać CMDB Health Dashboard?",opts:["Pobierz z ServiceNow store","Nic – jest aktywny domyślnie","Aktywuj scheduled jobs dashboardu","Aktywuj system property dashboardu"],correct:[2],explain:"Trzeba aktywować scheduled jobs dla CMDB Health Dashboard."},
+  {id:133,domain:"govern",source:"et",type:"multi",q:"Jakie są typy polityk end of life w CMDB Data Manager? (wybierz dwa)",opts:["Archive","Retire","Lost","Decommission","Disposed"],correct:[0,1],explain:"Archive (A) + Retire (B) to end of life policy types w Data Manager."},
+  {id:134,domain:"govern",source:"et",type:"single",q:"Jaka cecha głównego CI (Main CI) jest używana w Duplicate CI Remediator? (wybierz dwa)",opts:["Least Related Items","Most Related Items","Newest Created","Oldest Created"],correct:[1,3],explain:"Most Related Items (B) + Oldest Created (D) identyfikują Main CI w Duplicate CI Remediator."},
+  {id:135,domain:"govern",source:"et",type:"single",q:"Policy type do usunięcia rekordów z możliwością przywrócenia w określonym czasie?",opts:["Archive","Retire","Certification","Delete"],correct:[0],explain:"Archive – usuwa rekordy ale umożliwia przywrócenie w retention period. Delete = permanentne usunięcie."},
+  {id:136,domain:"govern",source:"et",type:"single",q:"Który czynnik jest najbardziej krytyczny dla operacjonalizacji CMDB?",opts:["Wgraj jak najwięcej danych","Ustanów clear governance i monitoruj CMDB health","Pozwól IT teams modyfikować rekordy","Polegaj na automated discovery"],correct:[1],explain:"Clear governance + continuous health monitoring = klucz do operacjonalizacji CMDB."},
+  {id:137,domain:"govern",source:"et",type:"single",q:"Gdzie user z odpowiednimi rolami przegląda i zarządza wygenerowanymi tasks po konfiguracji Data Manager policies?",opts:["CMDB Health Dashboard > Duplicate CIs tab","CMDB Workspace > My Work tab","CMDB Health Dashboard > Audit tab","CMDB Workspace > Management tab"],correct:[1],explain:"CMDB Workspace > My Work tab – tu trafiają tasks z Data Manager policies."},
+  {id:138,domain:"govern",source:"et",type:"multi",q:"Jakie akcje może podjąć administrator w CMDB Data Foundations Dashboard gdy widzi niskie scores? (wybierz dwa)",opts:["Usuń non-operational CIs","Skupi się na metrikach Critical/High priority","Dostosuj metryki exclusion rules","Użyj Remediation Playbooks"],correct:[1,3],explain:"(B) Fokus na Critical/High priority metrics + (D) Remediation Playbooks."},
+  {id:139,domain:"govern",source:"et",type:"single",q:"Jakie są WSZYSTKIE typy polityk CMDB Data Manager?",opts:["Delete, Attestation, Retire, Certification","Attestation, Retire, Certification","Archive and Delete","Retire, Archive, Attestation, Certification, and Delete"],correct:[3],explain:"Pełna lista: Retire, Archive, Attestation, Certification, Delete."},
+  {id:140,domain:"govern",source:"et",type:"single",q:"Która feature może filtrować CI classes wyświetlane na CMDB Health Dashboard?",opts:["Reconciliation Rules","Identification Rules","Data Refresh Rules","Health Inclusion Rules"],correct:[3],explain:"Health Inclusion Rules zawężają scope klas i CIs widocznych w Health Dashboard."},
+  {id:141,domain:"govern",source:"et",type:"single",q:"Cel CMDB Data Manager w ServiceNow?",opts:["Szyfruje archiwizowane rekordy","Automatyzuje enforcement relationship rules","Automatyzuje archival i deletion records na podstawie retention policies"],correct:[2],explain:"Data Manager automatyzuje archival, deletion i lifecycle operations na podstawie policies."},
+  {id:142,domain:"govern",source:"et",type:"single",q:"CMDB Data Manager – where to create, publish, manage policies?",opts:["CMDB Workspace Management tab","Service Operations Workspace","CMDB Workspace CMDB 360 tab","CI Class Manager"],correct:[0],explain:"CMDB Workspace > Management tab to miejsce do zarządzania politykami Data Manager."},
+  {id:143,domain:"govern",source:"et",type:"single",q:"Po retire CI records – jaka zalecana akcja według Data Manager?",opts:["Stwórz delete policy","Stwórz business rule","Stwórz scheduled job"],correct:[0],explain:"Delete Policy w Data Manager jest zalecanym krokiem po retire – umożliwia usunięcie."},
+  {id:144,domain:"govern",source:"et",type:"single",q:"Narzędzie do usuwania nieaktualnych/nieprzydatnych danych z CMDB?",opts:["CI Class Manager","CMDB and CSDM Data Foundations Dashboard","CMDB Data Manager","De-duplication Templates","CMDB Health Dashboard"],correct:[2],explain:"CMDB Data Manager jest governance tool do zarządzania lifecycle i usuwania danych."},
+  {id:145,domain:"govern",source:"et",type:"single",q:"Jak Configuration Manager skonfiguruje zalecane fields i wygeneruje task records gdy Support Group/Managed By Group są puste dla Linux servers?",opts:["CMDB Workspace i Scheduled Jobs","Technical Service Offerings i Dynamic CI groups","Dynamic CI groups i CMDB groups","CI Class Manager i Health Preferences"],correct:[3],explain:"CI Class Manager (recommended fields) + Health Preferences = konfiguracja i generowanie tasks."},
+  {id:146,domain:"govern",source:"et",type:"single",q:"Playbook – jaki Governance process play zapobiega pustym Service Owner fields?",opts:["Ustaw default value na Service Owner field","Zrób pole Owned by mandatory","Zrób pole Managed by mandatory"],correct:[1],explain:"Owned by mandatory = wymuszenie że każdy serwis ma właściciela."},
+
+// ── Insight T4 Q1-25 (ET) ─────────────────────────────────────────
+  // ── Pytania autorskie (source:my) ────────────────────────────────
+  {id:51,domain:"config",source:"my",type:"single",q:"Co to jest Principal Class w ServiceNow CMDB?",opts:["Klasa bazowa dla wszystkich CIs w hierarchii cmdb_ci","Klasa CI która ma własne reguły identyfikacji IRE i może być Principal CI w relacjach","Klasa definiująca mandatory fields dla CI","Klasa używana wyłącznie przez Discovery"],correct:[1],explain:"Principal Class to klasa CI posiadająca własne IRE Identification Rules i może pełnić rolę Principal CI w relacjach zawierania (hosted/contained by)."},
+  {id:52,domain:"config",source:"my",type:"single",q:"Jaka jest różnica między Identification Rules a Reconciliation Rules w IRE?",opts:["Identification Rules wykrywają duplikaty, Reconciliation Rules tworzą nowe CIs","Identification Rules określają które CI dopasować/tworzyć, Reconciliation Rules określają które atrybuty przyjąć gdy dane z wielu źródeł","Są synonimami – robią to samo","Identification Rules są dla hardware, Reconciliation Rules dla software"],correct:[1],explain:"IRE: Identification Rules = match/create CI; Reconciliation Rules = które wartości atrybutów 'wygrają' gdy wiele źródeł dostarcza dane dla tego samego CI (priorytety źródeł)."},
+  {id:53,domain:"config",source:"my",type:"single",q:"Co to jest Reclassification w IRE?",opts:["Zmiana klasy CI na bardziej szczegółową gdy nowe dane pozwalają precyzyjniejszą klasyfikację","Usunięcie CI z CMDB","Przeniesienie CI między Application Services","Zmiana statusu CI na Retired"],correct:[0],explain:"IRE Reclassification: gdy IRE otrzyma dane dla CI np. jako cmdb_ci_computer, ale na podstawie atrybutów może go reklasyfikować do bardziej szczegółowej klasy (np. cmdb_ci_win_server)."},
+  {id:54,domain:"ingest",source:"my",type:"single",q:"Jaka jest kluczowa różnica między Service Graph Connector a Import Set przy wczytywaniu danych do CMDB?",opts:["Service Graph Connector jest płatny, Import Set darmowy","Service Graph Connector używa IRE i jest zarządzany przez producenta, Import Set wymaga ręcznej konfiguracji transform map","Service Graph Connector tylko dla cloud data, Import Set dla on-prem","Nie ma różnicy – oba robią to samo"],correct:[1],explain:"SGC: zarządzany przez ServiceNow/partnera, automatycznie używa IRE do identyfikacji/reconciliation. Import Sets: wymaga ręcznych Transform Maps i zazwyczaj bezpośrednio wstawia/aktualizuje rekordy."},
+  {id:55,domain:"ingest",source:"my",type:"single",q:"Co to jest IntegrationHub ETL (Extract, Transform, Load) w kontekście CMDB?",opts:["Narzędzie do eksportu danych z CMDB do zewnętrznych systemów","Platforma low-code do tworzenia przepływów integracyjnych używająca IRE do ładowania danych do CMDB","Zamiennik dla ServiceNow Discovery","Moduł raportowania w CMDB"],correct:[1],explain:"IntegrationHub ETL to low-code platforma umożliwiająca tworzenie przepływów ETL które pobierają dane z zewnętrznych źródeł i ładują je do CMDB przez IRE."},
+  {id:56,domain:"ingest",source:"my",type:"single",q:"Agent Client Collector (ACC) służy do:",opts:["Monitorowania wydajności agentów ServiceNow","Zbierania danych inwentaryzacyjnych z urządzeń (bez pełnego Discovery) i dostarczania do CMDB","Zarządzania certyfikatami SSL na serwerach","Automatycznego deploymentu agentów Discovery"],correct:[1],explain:"ACC (Agent Client Collector) zbiera lekkie dane inwentaryzacyjne (hardware, software, network) z urządzeń z zainstalowanym agentem i wysyła je do ServiceNow przez IRE."},
+  {id:57,domain:"govern",source:"my",type:"single",q:"Jakie są 3 scorecards CMDB Health Dashboard?",opts:["Coverage, Accuracy, Currency","Correctness, Completeness, Compliance","Quality, Performance, Security","Discovery, Mapping, Governance"],correct:[1],explain:"CMDB Health Dashboard ma 3 KPI scorecards: Correctness (Stale/Duplicate/Orphan), Completeness (Required/Recommended fields), Compliance (audits)."},
+  {id:58,domain:"govern",source:"my",type:"multi",q:"Jakie metryki wchodzą w skład Correctness scorecard? (Choose two.)",opts:["Stale CIs","Required fields","Duplicate CIs","Audit compliance","Orphan CIs"],correct:[0,2],explain:"Correctness scorecard: Stale CIs (nieaktualizowane), Duplicate CIs (duplikaty), Orphan CIs (sieroty bez relacji). Required/Recommended fields → Completeness. Audits → Compliance."},
+  {id:59,domain:"govern",source:"my",type:"single",q:"Co to są CMDB Groups (typ 'health') i do czego służą?",opts:["Grupy użytkowników z dostępem do CMDB","Logiczne grupy CIs używane do segmentowania wyników CMDB Health Dashboard","Grupy serwerów dla Service Mapping","Grupy reguł identyfikacji IRE"],correct:[1],explain:"CMDB Groups typu 'health' pozwalają segmentować wyniki Health Dashboard (np. według regionu, technologii) – zamiast widzieć tylko globalny wynik, można widzieć wyniki dla podzbioru CIs."},
+  {id:60,domain:"govern",source:"my",type:"single",q:"Jakie są typy polityk CMDB Data Manager?",opts:["Archive, Delete, Retire, Attestation, Certification","Create, Update, Delete, Archive","Active, Inactive, Retired, Disposed","Discover, Import, Reconcile, Archive"],correct:[0],explain:"CMDB Data Manager oferuje 5 typów polityk: Archive (archiwizacja), Delete (usunięcie), Retire (wycofanie), Attestation (potwierdzenie przez właściciela), Certification (certyfikacja dokładności danych)."},
+  {id:61,domain:"govern",source:"my",type:"single",q:"Jaka jest różnica między Archive a Delete policy w CMDB Data Manager?",opts:["Archive usuwa dane trwale, Delete przenosi do archiwum","Archive przenosi CI do tabeli archiwum (możliwe przywrócenie), Delete trwale usuwa rekord","Są identyczne – różnią się tylko nazwą","Archive dotyczy hardware, Delete dotyczy software"],correct:[1],explain:"Archive → CI przeniesiony do tabeli archive (można przywrócić w zdefiniowanym czasie). Delete → trwałe usunięcie rekordu z CMDB."},
+  {id:62,domain:"govern",source:"my",type:"single",q:"Ile poziomów ma CI Class Manager i co reprezentują?",opts:["2 poziomy: hardware i software","3 poziomy: Principal Class, Sub-class, Instance","Hierarchia zgodna z CMDBi klasami: Base Class → extending classes","Nieograniczona hierarchia dziedziczenia"],correct:[2],explain:"CI Class Manager pokazuje hierarchię klas CMDB opartą na dziedziczeniu ServiceNow – od bazowych (cmdb_ci) przez pośrednie do szczegółowych klas. Umożliwia konfigurację Identification Rules, Reconciliation Rules i atrybutów per klasa."},
+  {id:63,domain:"config",source:"my",type:"single",q:"Co to są Dynamic CI Groups?",opts:["Grupy CIs definiowane przez dynamiczne zapytania (filters) które automatycznie aktualizują się","Grupy CIs aktualizowane tylko przez Discovery","Statyczne listy CIs tworzone ręcznie","Grupy CIs dla Event Management alerts"],correct:[0],explain:"Dynamic CI Groups to grupy CIs zdefiniowane przez filtry/warunki które dynamicznie aktualizują membership – CI wchodzi/wychodzi z grupy automatycznie gdy spełnia/nie spełnia warunków."},
+  {id:64,domain:"insight",source:"my",type:"single",q:"Jaka jest kluczowa różnica między Business Service Map a Unified Map?",opts:["Business Service Map jest starszym narzędziem zastąpionym przez Unified Map który oferuje więcej możliwości filtrowania i widoków","Unified Map jest tylko dla hardware, Business Service Map dla software","Business Service Map wymaga Service Mapping, Unified Map nie","Są identyczne – tylko różna nazwa"],correct:[0],explain:"Unified Map to nowsze, bogatsze narzędzie: oferuje filtrowanie po CI type/discovery source, zoom, contextual side panel z related items. Business Service Map to starsze, uproszczone narzędzie."},
+  {id:65,domain:"insight",source:"my",type:"single",q:"Co to jest CMDB Query Builder?",opts:["Narzędzie do tworzenia raportów CMDB w ServiceNow","Graficzne narzędzie do budowania złożonych zapytań po hierarchii CI i ich relacjach (w tym non-CMDB tables)","Narzędzie do zarządzania regułami IRE","Interfejs do ręcznego tworzenia CIs"],correct:[1],explain:"CMDB Query Builder to graficzne (canvas-based) narzędzie do budowania złożonych zapytań łączących klasy CMDB, ich relacje i opcjonalnie non-CMDB tables (np. Incident)."},
+  {id:66,domain:"csdm",source:"my",type:"single",q:"Jakie są 4 typy Application Service w ServiceNow?",opts:["Manual, Automatic, Dynamic, Static","Manual, Top-Down (Service Mapping), Tag-Based, Dynamic CI Group","Basic, Standard, Advanced, Enterprise","Discovered, Imported, Manual, Hybrid"],correct:[1],explain:"4 typy Application Service: Manual (ręcznie budowane), Top-Down/Service Mapping (automatycznie przez SM), Tag-Based (na podstawie tagów CI), Dynamic CI Group (na podstawie dynamic group)."},
+  {id:67,domain:"csdm",source:"my",type:"single",q:"Jaka tabela ServiceNow odpowiada Business Service w CSDM?",opts:["cmdb_ci_service","cmdb_ci_service_business","cmdb_ci_service_auto","service_offering"],correct:[1],explain:"Business Service → tabela cmdb_ci_service_business. Technology Management Service (Technical Service) → cmdb_ci_service_technical. Application Service/Service Instance → cmdb_ci_service_auto."},
+  {id:68,domain:"csdm",source:"my",type:"single",q:"Co reprezentuje Information Object w CSDM i w jakiej tabeli jest przechowywany?",opts:["Dokumentacja API – tabela cmdb_ci_appl","Logiczny typ danych (np. PII, PCI) powiązany z Business Application – tabela cmdb_information_object","Konfiguracja bazy danych – tabela cmdb_ci_database","Metadane CIs – tabela cmdb_metadata"],correct:[1],explain:"Information Object reprezentuje logiczne typy danych regulowanych (PII, PCI, PHI) i jest przechowywany w tabeli cmdb_information_object, łączony relacją z Business Application."},
+  {id:69,domain:"csdm",source:"my",type:"multi",q:"Jakie 5 etapów definiuje CSDM maturity journey? (Choose five – wskaż WSZYSTKIE prawidłowe)",opts:["Foundation","Crawl","Walk","Run","Fly"],correct:[0,1,2,3,4],explain:"CSDM maturity stages: Foundation (podstawy) → Crawl (raczkowanie) → Walk (chodzenie) → Run (bieganie) → Fly (latanie). Każdy etap buduje na poprzednim."},
+  {id:70,domain:"csdm",source:"my",type:"single",q:"Co unikatowo identyfikuje etap Foundation w CSDM journey?",opts:["Wdrożenie Service Mapping","Skonfigurowanie podstawowych obiektów: lokalizacje, business units, product models, user groups","Zbudowanie pełnej hierarchii Business Services","Implementacja Information Objects"],correct:[1],explain:"Foundation stage: ustawienie fundamentalnych obiektów – Locations, Business Units/Departments, Product Models, User Groups. Bez tych podstaw kolejne etapy nie mają sensu."},
+  {id:71,domain:"govern",source:"my",type:"single",q:"Co to jest CMDB Workspace i jakie są jego główne funkcje?",opts:["Dedykowany widok dla Configuration Managers z centralnym dostępem do CMDB health, duplicate remediation, Discovery, i CMDB 360","Panel administracyjny tylko dla adminów","Interfejs do tworzenia i edycji klas CI","Dashboard raportowy dla management"],correct:[0],explain:"CMDB Workspace to centralne miejsce pracy dla Configuration Managers: widok zdrowia CMDB, remediacja duplikatów, uruchamianie Discovery, CMDB 360/Multisource analytics, NLQ i Unified Map."},
+  {id:72,domain:"ingest",source:"my",type:"single",q:"Jaką rolę pełni IRE (Identification and Reconciliation Engine) w procesie wczytywania danych do CMDB?",opts:["Tylko wykrywa duplikaty w CMDB","Identyfikuje czy dany CI już istnieje (match/create/reclassify) i reconciliuje atrybuty gdy dane pochodzą z wielu źródeł","Zarządza uprawnieniami dostępu do CMDB","Generuje raporty o jakości danych"],correct:[1],explain:"IRE to silnik przetwarzający wszystkie dane przychodzące do CMDB: 1) Identification – czy CI istnieje, jeśli tak dopasuj, jeśli nie utwórz, opcjonalnie reklasyfikuj. 2) Reconciliation – które wartości atrybutów przyjąć gdy wiele źródeł konfliktuje."},,
+  // ── Pytania autorskie v2 – z materiałów webinar/whitepaper ────────
+  {id:206,domain:"ingest",source:"my",type:"single",q:"Co to jest SGC Central i jaka jest jego główna funkcja?",opts:["Narzędzie do ręcznej konfiguracji reguł IRE","Scentralizowana konsola do zarządzania Service Graph Connectors: instalacja, konfiguracja, monitoring i debugowanie","Zamiennik dla CMDB Health Dashboard","Narzędzie do tworzenia Custom Import Sets"],correct:[1],explain:"SGC Central to nowoczesna, ujednolicona konsola do zarządzania Service Graph Connectors przez cały cykl życia: install, configure, operate, debug."},
+  {id:207,domain:"ingest",source:"my",type:"multi",q:"Jakie informacje pokazuje SGC Central w Consolidated Status View? (Choose two.)",opts:["Stan każdego połączenia (credentials, connectivity)","Wyniki ostatniego przetwarzania i aktywne harmonogramy","Historia zmian atrybutów CI","Lista wszystkich reguł IRE"],correct:[0,1],explain:"SGC Central Consolidated Status View: stan połączenia (credentials/connectivity issues) + wyniki ostatniego run z harmonogramami i błędami."},
+  {id:208,domain:"ingest",source:"my",type:"single",q:"Przez ile ostatnich dni SGC Central domyślnie pokazuje metryki Data Ingestion (CIs imported, import sets, etc.)?",opts:["30 dni","7 dni","14 dni","24 godziny"],correct:[1],explain:"SGC Central Data Ingestion metrics śledzą import sets, import rows, CIs i partial records z ostatnich 7 dni."},
+  {id:209,domain:"govern",source:"my",type:"single",q:"Co powoduje, że CI jest traktowane jako 'Stale' (nieaktualne) w CMDB?",opts:["CI ma zduplikowane atrybuty","CI nie zostało zaktualizowane (pole Updated) przez określony czas – domyślnie 60 dni","CI nie ma przypisanego Support Group","CI nie przeszło przez IRE"],correct:[1],explain:"Stale CI = CI nieaktualizowane przez zbyt długo. Updated field jest aktualizowane przez Discovery/SGC (przez Last_discovered) lub ręcznie. Domyślny próg staleness = 60 dni."},
+  {id:210,domain:"govern",source:"my",type:"multi",q:"Jakie problemy może powodować Stale data w CMDB? (Choose two.)",opts:["Zwiększona wydajność instancji","Niedokładne raportowanie które erodes trust w CMDB","Nieprawidłowe CI w Incident dropdowns zwiększające MTTR","Automatyczne usuwanie CI z CMDB"],correct:[1,2],explain:"Stale data skutki: nierzetelne raporty niszczą zaufanie do CMDB + błędne CIs w Incident/Change dropdowns wydłużają MTTR i powodują failed Changes."},
+  {id:211,domain:"govern",source:"my",type:"single",q:"Które pole w CI jest aktualizowane gdy Discovery lub Service Graph Connector skanuje dane urządzenie?",opts:["install_status","last_discovered","operational_status","sys_updated_on"],correct:[1],explain:"Discovery i SGC aktualizują pole last_discovered, które z kolei triggeruje aktualizację pola Updated (sys_updated_on) na CI."},
+  {id:212,domain:"govern",source:"my",type:"single",q:"Jaka jest różnica między Attestation a Data Certification policy w CMDB Data Manager?",opts:["Są identyczne","Attestation = właściciel potwierdza że CI jest aktualne (nie patrząc na atrybuty); Data Certification = właściciel waliduje i koryguje konkretne wartości atrybutów","Attestation dotyczy hardware, Certification software","Data Certification jest automatyczna, Attestation manualna"],correct:[1],explain:"Attestation: owner potwierdza że CI jest current (acknowledgement, nie walidacja atrybutów). Data Certification: owner weryfikuje i koryguje konkretne wartości atrybutów CI (i non-CMDB tables!)."},
+  {id:213,domain:"govern",source:"my",type:"single",q:"Data Certification policy w CMDB Data Manager może być stosowana do:",opts:["Tylko tabel CMDB","Tylko tabel nie-CMDB","Zarówno tabel CMDB jak i non-CMDB tables"],correct:[2],explain:"Data Certification w Data Manager może weryfikować i korygować dane zarówno w tabelach CMDB jak i non-CMDB tables – to ważna przewaga nad Attestation."},
+  {id:214,domain:"govern",source:"my",type:"single",q:"Co to jest Retirement Policy w CMDB Data Manager i z czym powinna być zsynchronizowana?",opts:["Policy usuwająca CI z CMDB; synchronizowana z Discovery schedule","Policy przenosząca CI do lifecycle stage Retired; powinna być zsynchronizowana z associated asset status","Policy archiwizująca CI; synchronizowana z Change Management","Policy deaktywująca CI; synchronizowana z Service Mapping"],correct:[1],explain:"Retirement Policy: triggeruje przejście CI do lifecycle stage Retired. Powinna być zsynchronizowana z associated asset status (Asset Management) dla spójności danych."},
+  {id:215,domain:"config",source:"my",type:"single",q:"Jakie są 3 podejścia do implementacji/migracji CSDM według white paper?",opts:["Top-down, Bottom-up, Middle-out","Outcome Centric, Domain Centric, Step-wise (Foundation→Fly)","Agile, Waterfall, Hybrid","Crawl, Walk, Run"],correct:[1],explain:"CSDM 5 white paper definiuje 3 podejścia: Outcome Centric (zacznij od wyniku biznesowego), Domain Centric (jeden domain na raz), Step-wise (Foundation→Crawl→Walk→Run→Fly)."},
+  {id:216,domain:"csdm",source:"my",type:"single",q:"Jaka jest główna zaleta podejścia Outcome Centric do implementacji CSDM?",opts:["Zapewnia pełne pokrycie wszystkich domainów od razu","Faster time to value – fokus na konkretnym wyniku biznesowym z minimalnym zestawem danych","Najłatwiejsze do zarządzania ze względu na prostą strukturę","Nie wymaga zaangażowania stakeholderów"],correct:[1],explain:"Outcome Centric: szybszy time to value bo fokusuje się na konkretnym burning problem/outcome i potrzebuje tylko danych wymaganych dla tego wyniku. Ryzyko: 'islands of data'."},
+  {id:217,domain:"csdm",source:"my",type:"single",q:"Jaka jest główna wada podejścia Step-wise (Crawl/Walk/Run/Fly) do CSDM?",opts:["Jest zbyt skomplikowane technicznie","Early value elusive – trudno pokazać wartość biznesową na wczesnych etapach","Wymaga zbyt dużo licencji","Nie obejmuje Foundation domain"],correct:[1],explain:"Step-wise: buduje fundament metodycznie ale early value jest trudne do osiągnięcia, value proposition trudne do uzasadnienia ('so what?') i może prowadzić do 'CSDM Bingo'."},
+  {id:218,domain:"csdm",source:"my",type:"single",q:"Co CSDM NIE jest? (wybierz poprawne stwierdzenie)",opts:["Standardem definicji serwisów w ServiceNow","Procesem lub implementation guide dla produktów ServiceNow","Wspólnym modelem danych dla platformy ServiceNow","Prescriptive guidance dla modelowania CMDB"],correct:[1],explain:"CSDM NIE jest: procesem, implementation guide, zestawem raportów, kodem do instalacji ani automatyczną naprawą poprzednich implementacji. Jest standardem/modelem danych i prescriptive guidance."},
+  {id:219,domain:"csdm",source:"my",type:"single",q:"Ile domen ma CSDM 5?",opts:["5","6","7","4"],correct:[2],explain:"CSDM 5 ma 7 domen: Foundation, Ideation & Strategy (NOWA), Design & Planning, Build & Integration, Service Delivery, Service Consumption, Manage Portfolio."},
+  {id:220,domain:"csdm",source:"my",type:"single",q:"Która domena jest nowa w CSDM 5 (nie istniała w CSDM 4)?",opts:["Manage Portfolio","Build & Integration","Ideation & Strategy","Service Consumption"],correct:[2],explain:"Ideation & Strategy to nowa domena w CSDM 5, reprezentująca idee, koncepcje i inicjatywy strategiczne (Product Ideas, Planning Items, Strategic Priorities). Zarządzana przez SPM."},
+  {id:221,domain:"csdm",source:"my",type:"single",q:"Która domena CSDM 5 odpowiada za Enterprise Architecture (EA) i Business Applications?",opts:["Foundation","Ideation & Strategy","Design & Planning","Build & Integration"],correct:[2],explain:"Design & Planning to domena EA (formerly APM) – zawiera Business Capabilities, Business Applications, Information Objects. Nie są to 'operational' CIs."},
+  {id:222,domain:"csdm",source:"my",type:"single",q:"Co zawiera domena Build & Integration w CSDM 5?",opts:["Infrastructure CIs i Technology Management Services","DevOps Change Data Model, SDLC Components, AI System Digital Assets","Business Service Offerings i Catalogs","Product Ideas i Planning Items"],correct:[1],explain:"Build & Integration: DevOps Change Data Model, SDLC Components, AI System Digital Assets – reprezentuje widoczność w procesy build/integration produktów cyfrowych."},
+  {id:223,domain:"csdm",source:"my",type:"single",q:"Jak w CSDM 5 zmieniła się nazwa 'Application Service'?",opts:["Zmieniona na 'Business Application'","Zmieniona na 'Service Instance'","Zmieniona na 'Technology Management Service'","Nazwa nie zmieniła się"],correct:[1],explain:"W CSDM 5 Application Service jest relabelowane na 'Service Instance'. Application Service pozostaje jako jeden z typów Service Instance (focused on application deployment). Tabela: cmdb_ci_service_auto."},
+  {id:224,domain:"csdm",source:"my",type:"single",q:"Co to jest SBOM (Software Bill of Materials) w CSDM 5?",opts:["Raport budżetowy dla software assets","Szczegółowy inwentarz wszystkich komponentów wchodzących w skład oprogramowania – kluczowy dla Security Operations","Lista zainstalowanych aplikacji na serwerze","Dokumentacja API dla Business Applications"],correct:[1],explain:"SBOM = Software Bill of Materials: szczegółowy inwentarz wszystkich komponentów oprogramowania. W CSDM 5 to nowa capability kluczowa dla SecOps – śledzenie podatności (vulnerabilities) w komponentach."},
+  {id:225,domain:"csdm",source:"my",type:"single",q:"Jakie są dwie nowe klucze labels zmienione w CSDM 5 (poza Application Service → Service Instance)?",opts:["Business Service → Technical Service; Technical Service → Operational Service","Technical Service → Technology Management Service; Technical Service Offering → Technology Management Service Offering","Application Service → Service Auto; Business Service → Enterprise Service","Service Instance → Application Instance; Business Application → Digital System"],correct:[1],explain:"CSDM 5 label changes: 'Technical Service' → 'Technology Management Service'; 'Technical Service Offering' → 'Technology Management Service Offering'. Tabele się nie zmieniły (backward compatible)."},
+  {id:226,domain:"csdm",source:"my",type:"single",q:"Jakie są 3 OOB (out-of-box) typy serwisów w CSDM?",opts:["Internal, External, Hybrid","Application, Business, Technical (Technology Management)","Physical, Virtual, Cloud","Operational, Non-Operational, Archived"],correct:[1],explain:"CSDM definiuje 3 OOB service types: Application (Service Instance/cmdb_ci_service_auto), Business (cmdb_ci_service_business), Technical/Technology Management (cmdb_ci_service_technical)."},
+  {id:227,domain:"govern",source:"my",type:"multi",q:"Jakie są 3 filary (pillars) udanej Data Foundation według ServiceNow? (Choose three.)",opts:["Ingest","Govern","Insight","Report","Automate"],correct:[0,1,2],explain:"3 filary Data Foundation: Ingest (ciągłe wczytywanie danych), Govern (governance, lifecycle, health), Insight (widoczność, analytics, decyzje). To fundament CIS-DF certification."},
+  {id:228,domain:"ingest",source:"my",type:"multi",q:"Które narzędzia należą do filaru 'Ingest' Data Foundation? (Choose two.)",opts:["Service Graph Connectors","CMDB Health Dashboard","IntegrationHub ETL / IRE","Unified Map"],correct:[0,2],explain:"Ingest pillar tools: Service Graph Connectors, IntegrationHub ETL/IRE, ITOM Visibility (Discovery/SM), Agent Client Collector, CMDB 360/Multisource, SGC Central."},
+  {id:229,domain:"insight",source:"my",type:"multi",q:"Które narzędzia należą do filaru 'Insight' Data Foundation? (Choose two.)",opts:["Unified Map","Data Manager","CMDB Query Builder","Agent Client Collector"],correct:[0,2],explain:"Insight pillar tools: Unified Map, CMDB Query Builder, Service Graph Data Visualizer, CMDB Search (NLQ), CMDB/CSDM Dashboards, API Insights, Dynamic CI Groups."},
+  {id:230,domain:"config",source:"my",type:"single",q:"Co to jest Life Cycle Stage a co Life Cycle Stage Status w CSDM?",opts:["Są synonimami – oba oznaczają to samo","Life Cycle Stage = szeroka faza (np. Operational); Life Cycle Stage Status = konkretny status w tej fazie (np. In Use, In Maintenance)","Life Cycle Stage = status techniczny CI; Life Cycle Stage Status = status biznesowy","Life Cycle Stage dotyczy assets, Life Cycle Stage Status dotyczy CIs"],correct:[1],explain:"Life Cycle Stage = broad phase (Ideation, Design, Operational, End of Life). Life Cycle Stage Status = konkretny krok w tej fazie (np. w Operational: In Use → In Maintenance → End of Support). Razem jednoznacznie określają pozycję obiektu."},
+  {id:231,domain:"config",source:"my",type:"single",q:"Czy Life Cycle Stages i Stage Statuses można edytować w ServiceNow?",opts:["Tak, można dowolnie edytować","Nie – są dostarczane przez ServiceNow i nie są edytowalne (zapewniają data integrity)","Tylko admini mogą je edytować","Można dodawać nowe ale nie usuwać istniejących"],correct:[1],explain:"Life Cycle Stages i Stage Statuses NIE są edytowalne – dostarczane przez ServiceNow w formie zarządzanej dla zapewnienia integralności danych, accountability i spójności across entities."},
+  {id:232,domain:"config",source:"my",type:"single",q:"Która tabela ServiceNow służy do mapowania legacy CMDB status fields (install_status, operational_status) na nowe CSDM Life Cycle fields?",opts:["Life Cycle Stages [life_cycle_stage]","Life Cycle Mapping [life_cycle_mapping]","Life Cycle Controls [life_cycle_control]","Life Cycle Stage Status [life_cycle_stage_status]"],correct:[1],explain:"Life Cycle Mapping [life_cycle_mapping] to tabela umożliwiająca mapowanie starych/legacy statusów (install_status, operational_status, hardware_status) na nowe CSDM Life Cycle Stage / Stage Status."},
+  {id:233,domain:"csdm",source:"my",type:"single",q:"Co to są Teams w CSDM 5 i do czego służą?",opts:["Grupy użytkowników do przydzielania zadań ITSM","Nowa capability do zarządzania wieloma grupami kontaktowymi (contact groups) dla CI","Zastąpienie Assignment Group na wszystkich tabelach","Struktury organizacyjne dla Business Units"],correct:[1],explain:"Teams w CSDM 5 to nowa capability umożliwiająca zarządzanie wieloma grupami kontaktowymi dla CI (np. owned by, managed by, support). Zastępuje ograniczenia pojedynczych pól referencyjnych."},
+  {id:234,domain:"csdm",source:"my",type:"single",q:"Co to jest CMDB Group i czym różni się od Dynamic CI Group?",opts:["Są identyczne","CMDB Group = statyczna kolekcja CIs (saved queries, encoded queries, manual); Dynamic CI Group = część modelu CSDM definiująca kryteria które CMDB Groups włączyć","CMDB Group jest dla hardware, Dynamic CI Group dla software","Dynamic CI Group jest przestarzałe, zastąpione przez CMDB Group"],correct:[1],explain:"CMDB Group [cmdb_group] = kolekcja CIs z saved Query Builder queries, encoded queries lub manualnie. Dynamic CI Group (CSDM model object) zawiera kryteria które CMDB Groups włączyć – wyższy poziom abstrakcji."},
+  {id:235,domain:"csdm",source:"my",type:"single",q:"Jaka jest kluczowa zasada CSDM dotycząca zakupu modułów/produktów?",opts:["Każdy element CSDM wymaga osobnej licencji","Wszystkie core tables i obiekty CSDM są dostępne OOB jako część platformy lub free store apps","CSDM wymaga zakupu ITOM","Tylko CSDM Foundation jest bezpłatny – pozostałe domeny wymagają licencji"],correct:[1],explain:"Kluczowa zasada CSDM: wszystkie OOB tables i core objects są dostarczane jako część ship z-boot lub free store apps. Nie trzeba kupować modułu żeby używać CSDM – to differentiator ServiceNow."},,
+  {id:148,domain:"insight",source:"et",type:"single",q:"[T4 Q1] DRAG DROP – ServiceNow product values for Incident Management (DD – pominięte jako osobne pytanie)",opts:["[pomijam – DD]"],correct:[0],explain:"DD question – treść niedostępna jako tekst."},
+  {id:149,domain:"insight",source:"et",type:"single",q:"Gdzie można przeglądać i tworzyć CMDB 360/Multisource Saved Query w CMDB Workspace?",opts:["Saved queries window on the Insight tab","CMDB Query Builder","Coverage window on the CMDB 360 tab","Saved queries window on the CMDB 360 tab"],correct:[3],explain:"CMDB 360 Saved Queries są dostępne w Saved queries window na zakładce CMDB 360 tab w CMDB Workspace."},
+  {id:150,domain:"insight",source:"et",type:"single",q:"Jak Application Service mapping wspiera Change Management przy zmianie datacenter?",opts:["Aby zrozumieć fizyczną lokalizację CIs","Aby zidentyfikować które urządzenia wyłączą się pierwsze","Aby zrozumieć business impact CIs"],correct:[2],explain:"Service Mapping pomaga zrozumieć business impact – które usługi zostaną dotknięte zmianą."},
+  {id:151,domain:"insight",source:"et",type:"single",q:"Gdzie administrator wykonuje Natural Language Queries (NLQ)?",opts:["CMDB Data Manager","CI Class Manager","CMDB Workspace","CMDB Health Dashboard"],correct:[2],explain:"NLQ jest dostępne w CMDB Workspace."},
+  {id:152,domain:"insight",source:"et",type:"single",q:"Healthcare provider potrzebuje ustalić dotkniętych użytkowników podczas krytycznego incydentu systemu zarządzania pacjentami. Jakich danych CSDM użyć?",opts:["Incident history of similar CIs","Application Service environment attribute","Service Offerings by Department or Location","Affected CI [task_ci] related list"],correct:[2],explain:"Service Offerings by Department/Location pozwala określić kto konsumuje usługę i jest dotknięty incydentem."},
+  {id:153,domain:"insight",source:"et",type:"single",q:"Configuration Manager chce użyć Unified Map. Gdzie jest dostępny?",opts:["CMDB Data Manager","CI Class Manager","CMDB Workspace"],correct:[2],explain:"Unified Map jest dostępny w CMDB Workspace."},
+  {id:154,domain:"insight",source:"et",type:"multi",q:"Service owner używa Unified Map i chce filtrować nieistotne informacje. Jakie opcje filtrowania są dostępne? (Choose two.)",opts:["Discovery source","CI type","Business criticality","Managed by group"],correct:[0,1],explain:"Unified Map filter panel oferuje: Discovery source i CI type jako opcje filtrowania."},
+  {id:155,domain:"insight",source:"et",type:"multi",q:"CMDB Administrator chce stworzyć zapytanie CMDB Query Builder dla wszystkich baz danych w Seattle połączonych z application services (+ incydenty). Jakie kroki? (Choose two.)",opts:["Add to the canvas the Incident table from the Non-CMDB Tables list","Add a filter to the database node for location=Seattle","Set the relationship level to 'Up to 2nd level relationships'","Add property columns to the application service node"],correct:[0,1],explain:"Dodaj Incident table z Non-CMDB Tables i dodaj filtr location=Seattle do węzła database."},
+  {id:156,domain:"insight",source:"et",type:"single",q:"Co musi być prawdą aby CMDB 360/Multisource CMDB mogło raportować dane CI?",opts:["Reconciliation rules z priorytetami muszą być skonfigurowane","CI data musi pochodzić z autoryzowanego Service Graph Connector","CI data musi przejść przez IRE","ServiceNow Discovery musi być używane"],correct:[2],explain:"CMDB 360 raportuje tylko dane które przeszły przez IRE (Identification & Reconciliation Engine)."},
+  {id:157,domain:"insight",source:"et",type:"multi",q:"Jakie kluczowe korzyści Event Management zyskuje z dobrze utrzymanego CMDB? (Choose two.)",opts:["Correlation of alerts to knowledge base articles","Mapped services provide visibility to the business impact of an alert","Binding of alerts to specific CIs","Mapped services provide visibility to users consuming the service"],correct:[1,2],explain:"Event Management: binding alertów do CIs + widoczność business impact przez zmapowane serwisy."},
+  {id:158,domain:"insight",source:"et",type:"single",q:"CMDB Administrator potrzebuje informacji jak CMDB jest skonfigurowany zgodnie z best practices ServiceNow. Czego użyć?",opts:["CMDB Health Dashboard","CMDB Workspace","CMDB Data Manager","CMDB Data Foundation Dashboard"],correct:[3],explain:"CMDB Data Foundation Dashboard pokazuje zgodność z best practices ServiceNow."},
+  {id:159,domain:"insight",source:"et",type:"multi",q:"Jaką wartość CMDB wnosi do security operations? (Choose two.)",opts:["Auto-resolves a vulnerability","Identifies the IT infrastructure with a vulnerability","Enables audits and attestations across CIs","Allows security team to assess and remediate an incident"],correct:[1,3],explain:"CMDB identyfikuje podatną infrastrukturę i umożliwia security teamowi ocenę i remediation incydentów."},
+  {id:160,domain:"insight",source:"et",type:"multi",q:"Zdrowy CMDB z Service Mapping – jak poprawia Change Management? (Choose two.)",opts:["Provides insight into the potential impact of the change","Ensures that no changes result in service downtime","Automatically schedules and deploys changes","Enables auto population of the assignment group field to dynamically route changes"],correct:[0,3],explain:"CMDB + Service Mapping: wgląd w impact zmiany + auto-populacja assignment group do dynamicznego routowania zmian."},
+  {id:161,domain:"insight",source:"et",type:"single",q:"Dlaczego CMDB Manager użyłby CMDB 360/Multisource CMDB?",opts:["Aby zidentyfikować atrybuty CI z wielu źródeł danych","Aby ingestować dane z wielu źródeł używając Import Sets","Aby populować CMDB z wielu źródeł danych","Aby ingestować dane używając Service Graph Connectors"],correct:[0],explain:"CMDB 360 służy do identyfikacji i porównania atrybutów CI z wielu źródeł danych."},
+  {id:162,domain:"insight",source:"et",type:"multi",q:"Jakie dodatkowe możliwości ma Unified Map w porównaniu do Service Mapping map? (Choose two.)",opts:["Number of levels displayed on a map can be modified","Visibility to an application and the host it is installed on","Map nodes can be filtered based on user preferences","Map can be zoomed in and out"],correct:[2,3],explain:"Unified Map: filtrowanie węzłów + zoom. Service Mapping map nie ma tych funkcji."},
+  {id:163,domain:"insight",source:"et",type:"single",q:"Service Desk Manager chce użyć Unified Map aby znaleźć aktywne incydenty/problemy dla wybranego CI. Który panel to umożliwia?",opts:["Overview","Attributes","Related items","Application services"],correct:[2],explain:"Panel 'Related items' w Unified Map pokazuje aktywne incydenty i problemy powiązane z CI."},
+  {id:164,domain:"insight",source:"et",type:"multi",q:"Jakie akcje można zainicjować z CMDB Workspace? (Choose two.)",opts:["Create a new CMDB class","Execute ServiceNow Discovery","Remediate duplicate CI records","Create a CMDB Data Manager certification policy"],correct:[1,2],explain:"Z CMDB Workspace można uruchomić Discovery i remediować duplikaty CI. Correct answer per community: CD (Execute Discovery + Remediate duplicates)."},
+  {id:165,domain:"insight",source:"et",type:"single",q:"Jaka jest korzyść z CMDB Data Foundation Dashboard?",opts:["Provides the ability to resolve certification policy tasks","Provides the ability to configure health-related metrics","Provides key health-related metrics to make decisions"],correct:[2],explain:"CMDB Data Foundation Dashboard dostarcza kluczowych metryk zdrowotnych do podejmowania decyzji."},
+  {id:166,domain:"insight",source:"et",type:"single",q:"CMDB Administrator tworzy query w CMDB Query Builder pokazujące wszystkie operacyjne CIs należące do konkretnego application service. Jakie kroki?",opts:["1. Add Business Application, Application Service, CI classes. 2. Define filter. 3. Configure relationship. 4. Run.","1. Add Application Service and CI classes. 2. Configure relationship. 3. Define filter for service name and operational status. 4. Run.","1. Add Application Service and CI classes. 2. Configure relationship. 3. Add Operational Status and Name as columns. 4. Run."],correct:[1],explain:"Poprawna sekwencja: dodaj klasy → konfiguruj relacje → zdefiniuj filtry → uruchom."},
+  {id:167,domain:"insight",source:"et",type:"multi",q:"Jakie wglądy daje CMDB 360 saved queries? (Choose two.)",opts:["Gaps in attribute data from different data sources","Unique CIs created from different data sources","Different attribute values from different data sources","Orphan CIs created from different data sources","Duplicate configuration items from different data sources"],correct:[0,2],explain:"CMDB 360 queries pokazują: luki w danych atrybutów oraz różne wartości atrybutów z różnych źródeł."},
+  {id:168,domain:"insight",source:"et",type:"multi",q:"Jakie są korzyści z używania CMDB Data Foundations Dashboard? (Choose two.)",opts:["Checks that important data is valid and properly configured","Has a framework to create custom metrics","Provides playbooks to assist in remediation of potential risks","Uses automation to remediate potential risks"],correct:[0,2],explain:"Dashboard sprawdza poprawność ważnych danych i dostarcza playbooki do remediacji."},
+  {id:169,domain:"insight",source:"et",type:"single",q:"Service Owner chce zobaczyć Related items (Active Incidents, Planned Changes) bezpośrednio na home node Unified Map. Który obszar roboczy?",opts:["Map","Tool box","Content controls","Contextual side panel"],correct:[3],explain:"Contextual side panel w Unified Map pokazuje related items jak Active Incidents i Planned Changes."},
+  {id:170,domain:"insight",source:"et",type:"single",q:"Gdzie CMDB Administrator może uzyskać CMDB i CSDM Data Foundations Dashboard?",opts:["It is a free application on the ServiceNow Innovation Lab","It is active by default","It is a free application on the ServiceNow Store","It is a paid application on the ServiceNow Store"],correct:[2],explain:"CMDB i CSDM Data Foundations Dashboard są darmowymi aplikacjami dostępnymi w ServiceNow Store."},
+
+  // ── CSDM T5 Q1-40 (ET) ────────────────────────────────────────────
+  {id:171,domain:"csdm",source:"et",type:"single",q:"Który use case wymaga Information Objects w CSDM?",opts:["Event Operations chce automatyzować zdarzenia do incydentów","Business Service Management chce rozumieć operational impact","Customer Service chce wdrożyć pro-active case management","SecOps chce rozumieć operational risk w kontekście Business Application","Asset Management chce rozumieć asset life cycle compliancy w BA kontekście"],correct:[3],explain:"Information Objects są używane do modelowania danych w kontekście Business Applications – idealnie dla SecOps risk assessment."},
+  {id:172,domain:"csdm",source:"et",type:"single",q:"Platform Owner mapuje production line monitoring systems w CSDM 5. Który domain?",opts:["Build and Integration (Build)","Service Delivery (Manage Technical)","Service Consumption (Sell/Consume)","Design and Planning (Design)","Foundation"],correct:[1],explain:"Production line monitoring → Service Delivery (Manage Technical) – domenę techniczną zarządzania usługami."},
+  {id:173,domain:"csdm",source:"et",type:"single",q:"Gdzie development team przechowuje informacje dla audytów compliance (PII, PCI data)?",opts:["Technology Management Service Offerings i Dynamic CI Groups","Business Applications i Information Objects","Customer Service Offerings i Databases"],correct:[1],explain:"Business Applications + Information Objects – do śledzenia danych regulowanych i ich relacji z aplikacjami."},
+  {id:174,domain:"csdm",source:"et",type:"single",q:"CMDB jest wyrównany do CSDM Walk stage. Jaka korzyść?",opts:["Enables impact assessments for incident, problem, and change on Business Services","Improves APM Foundation implementation velocity","Allows for additional stratification of Technical team's support structure along OLAs and commitments"],correct:[2],explain:"Walk stage: dodatkowa stratyfikacja struktury wsparcia Technical team wzdłuż OLAs i zobowiązań."},
+  // Q5 is DD - skip (handled as id:323-324 range)
+  {id:175,domain:"csdm",source:"et",type:"single",q:"CMDB Administrator chce poprawić data quality związaną z CSDM. Jaką akcję podjąć?",opts:["Use the default configured CMDB Health Dashboard","Start the ServiceNow Health Scan","Use the CSDM Data Foundation Dashboard"],correct:[2],explain:"CSDM Data Foundation Dashboard jest dedykowanym narzędziem do poprawy jakości danych CSDM."},
+  {id:176,domain:"csdm",source:"et",type:"single",q:"Kto inicjuje request i definiuje wymagania dla catalog item infrastruktury w CSDM?",opts:["Enterprise Architecture","Technology Service Owners","Application Service Owners"],correct:[1],explain:"Technology Service Owners są odpowiedzialni za inicjowanie requestów infrastruktury i definiowanie wymagań."},
+  {id:177,domain:"csdm",source:"et",type:"multi",q:"Jakie korzyści uzasadniają ciągłe monitorowanie CMDB Foundation Dashboard? (Choose two.)",opts:["Provides a list of all CIs that failed health audits","Provides metrics for CIs Processed by the IRE","Provides metrics on active CIs updated in the last 90 days","Reports on all orphan CIs in the CMDB"],correct:[1,2],explain:"CMDB Foundation Dashboard: metryki CIs przetworzonych przez IRE + metryki aktywnych CIs aktualizowanych w ciągu 90 dni."},
+  {id:178,domain:"csdm",source:"et",type:"multi",q:"Jakie korzyści ma CMDB Data Foundations Dashboard? (Choose two.)",opts:["It enables monitoring and tracking of CMDB health over time","It provides actionable insights to improve data quality and completeness","It helps detect and eliminate duplicate records in the CMDB","It automates the approval process for change management"],correct:[0,1],explain:"Dashboard: monitorowanie zdrowia CMDB w czasie + actionable insights do poprawy jakości danych."},
+  {id:179,domain:"csdm",source:"et",type:"multi",q:"Jak Change Management zyska z CSDM? (Choose two.)",opts:["Identify blackout windows for the change","Determine the root cause of the change issue","Understand the impact of the change on services","Route the change dynamically"],correct:[2,3],explain:"CSDM wspiera Change: zrozumienie impact na serwisy + dynamiczne routowanie zmian."},
+  {id:180,domain:"csdm",source:"et",type:"multi",q:"Jakie są business values CMDB? (Choose two.)",opts:["Collecting and managing financial data","Streaming incident and change management","Strengthening operational resiliency","Automating maintenance for CI relationships"],correct:[1,2],explain:"CMDB: usprawnia incident/change management + wzmacnia operational resiliency."},
+  {id:181,domain:"csdm",source:"et",type:"single",q:"Który Get Well Playbook z CSDM Data Foundation Dashboard pomaga Vulnerability/Security Incident Response?",opts:["Locations without a Parent Location","Named Product Models without Product Owners","Percentage of Custom Status Values for CI Life Cycle Stages","Application Services with Business Application Relationships"],correct:[3],explain:"'Application Services with Business Application Relationships' playbook zapewnia kontekst dla risk estimation w security operations."},
+  {id:182,domain:"csdm",source:"et",type:"multi",q:"Administrator uruchamia 'Services Have Owners Identified' playbook. Jakie remediation plays? (Choose two.)",opts:["Govern Data","Fix Data","Report Data","Analyze Data"],correct:[1,3],explain:"Playbook 'Services Have Owners': Fix Data + Analyze Data jako plays remediacyjne."},
+  {id:183,domain:"csdm",source:"et",type:"single",q:"Governance team przechodzi z legacy CMDB status fields na CSDM life cycle status fields. Która tabela może być modyfikowana?",opts:["Life Cycle Stages [life_cycle_stage]","Life Cycle Mapping [life_cycle_mapping]","Life Cycle Controls [life_cycle_control]","Life Cycle Stage Status [life_cycle_stage_status]"],correct:[1],explain:"Life Cycle Mapping [life_cycle_mapping] mapuje stare statusy CMDB na nowe CSDM life cycle stage status."},
+  {id:184,domain:"csdm",source:"et",type:"single",q:"CMDB Data Foundations Dashboard pokazuje niski wynik Unique Locations. Jaki jest zalecany proces korekcji?",opts:["Review both locations, update CIs with correct location and delete the duplicate","Retain location matching naming convention and delete duplicate without validation","Keep both locations as valid alternates","Use Duplicate CI Remediator to merge duplicate location records"],correct:[0],explain:"Przejrzyj obie lokalizacje, zaktualizuj CIs z właściwą lokalizacją i usuń duplikat."},
+  // Q16 is DD - skip
+  {id:185,domain:"csdm",source:"et",type:"single",q:"Jaka jest prescribed CSDM rollout order?",opts:["Architecture, Business, Technical, Governance","Initiate, Plan, Execute, Deliver, Close","Foundation, Crawl, Walk, Run, Fly","Initial, Developing, Defined, Managed"],correct:[2],explain:"CSDM rollout order: Foundation → Crawl → Walk → Run → Fly."},
+  {id:186,domain:"csdm",source:"et",type:"single",q:"Które CMDB class należy użyć do śledzenia Business Applications z PII data?",opts:["API Component","Information Object","Business Capability","Data Classification"],correct:[1],explain:"Information Object w CSDM reprezentuje typy danych (jak PII) i ich relacje z Business Applications."},
+  {id:187,domain:"csdm",source:"et",type:"single",q:"Która zakładka CSDM Data Foundations Dashboard dostarcza metryk o wyrównaniu product models, locations i business units?",opts:["Fly","Crawl","Foundation","Run","Walk"],correct:[2],explain:"Zakładka Foundation pokazuje metryki podstawowe: product models, locations, business units alignment."},
+  {id:188,domain:"csdm",source:"et",type:"single",q:"Service Portfolio Manager chce wiedzieć od jakich Application Services zależą Business Service Offerings. Który etap CSDM to mapuje?",opts:["Foundation","Fly","Run","Walk","Crawl"],correct:[2],explain:"Run stage mapuje relacje między Business Service Offerings a Application Services."},
+  {id:189,domain:"csdm",source:"et",type:"single",q:"Enterprise Architect firmy finansowej chce śledzić enterprise capabilities. Który CSDM 5 domain?",opts:["Build and Integration (Build)","Design and Planning (Design)","Service Delivery (Manage Technical)","Service Consumption (Sell/Consume)","Foundation"],correct:[1],explain:"Business capabilities są częścią Design and Planning (Design) domain w CSDM 5."},
+  // Q22, Q23, Q24 are DD - skip
+  {id:190,domain:"csdm",source:"et",type:"single",q:"Organizacja zdrowotna chce śledzić dane regulowane (patient info) i ich relacje z Business Applications. Jaką akcję zaleca CSDM?",opts:["Create fields on Business Application record to mark as containing patient info","Classify data on each database and use Relationships to map back to Business Application","Create an Information Object to represent patient info, link it through relationship to Business Application"],correct:[2],explain:"CSDM: utwórz Information Object reprezentujący patient info i połącz relacją z Business Application."},
+  {id:191,domain:"csdm",source:"et",type:"single",q:"Którzy key stakeholders powinni być zaangażowani w decyzje dotyczące populowania CMDB w CSDM Crawl Stage?",opts:["Business Service Manager, Technology Service Owner","Application Owner, Application Service Owner","Customer Service Manager, Infrastructure Manager"],correct:[1],explain:"Crawl stage: Application Owner + Application Service Owner są kluczowymi stakeholderami."},
+  {id:192,domain:"csdm",source:"et",type:"single",q:"Szpital ma nowy CT Scanner z catalog item do planowania skanów. Który CSDM domain?",opts:["Foundation","Design and Planning (Design)","Service Delivery (Manage Technical Service)","Service Consumption (Sell/Consume)","Build and Integration (Build)"],correct:[3],explain:"Catalog item dla konsumentów → Service Consumption (Sell/Consume) domain."},
+  {id:193,domain:"csdm",source:"et",type:"single",q:"Która zakładka CSDM Data Foundation Dashboard dostarcza metryk o wyrównaniu Technology Management Services i Offerings?",opts:["Crawl","Run","Walk","Fly"],correct:[2],explain:"Walk tab: Technology Management Services (Technical Services) i Technology Management Offerings alignment."},
+  {id:194,domain:"csdm",source:"et",type:"single",q:"Które CMDB tables będą użyte do budowania CSDM sell/consume domain?",opts:["Business Capability, Information Object, Business Application","Business Service Offering, Business Service","Application Service, Technology Management Service, Technology Management Offering"],correct:[1],explain:"Sell/Consume domain: Business Service Offering + Business Service."},
+  {id:195,domain:"csdm",source:"et",type:"single",q:"Jak ServiceNow Platform (z Incident i Change) byłby zmapowany w CSDM jako Platform Applications?",opts:["Platform, Incident, Change – wszystkie web Architecture type z Incident/Change referencing Platform","Platform jako Platform Host; Incident i Change jako Platform Applications z reference do Platform","Platform, Incident, Change – web Architecture type z Depends On relationship","Platform jako Platform Host; Incident i Change jako Platform Applications z Depends On relationship"],correct:[3],explain:"Platform jako Architecture type Platform Host; Incident/Change jako Platform Applications; Depends On relationship między nimi."},
+  {id:196,domain:"csdm",source:"et",type:"single",q:"Manager potrzebuje informacji o relacjach między Infrastructure CIs, Technology Management Offerings i Application Services. Który CSDM domain?",opts:["Design and Planning (Design)","Service Consumption (Sell / Consume)","Service Delivery (Manage Technical Services)","Build and Integration (Build)","Foundation"],correct:[2],explain:"Service Delivery (Manage Technical Services) definiuje relacje między infrastrukturą a serwisami technicznymi."},
+  {id:197,domain:"csdm",source:"et",type:"single",q:"Który atrybut CSDM jest używany do priorytetyzacji customer-facing services w celu szybszego rozwiązywania incydentów?",opts:["Assignment Group on the CI record","Affected CIs in the Incident record","Business Criticality in the Service Offering","Service classification in the Technical Service"],correct:[2],explain:"Business Criticality w Service Offering służy do priorytetyzacji usług wpływających na klientów."},
+  {id:198,domain:"csdm",source:"et",type:"multi",q:"Kto jest zaangażowany w dodawanie CSDM Design and Planning domain components do CMDB? (Choose two.)",opts:["Application Service Owner","Enterprise Architect","Business Relationship Manager","Application Owner"],correct:[1,3],explain:"Design and Planning domain: Enterprise Architect + Application Owner jako kluczowe role."},
+  {id:199,domain:"csdm",source:"et",type:"single",q:"Jaki jest cel Information Object w CSDM?",opts:["Describes data in general on a group of CIs","Describes data exchanged between API interface and Application","Describes the logical data to the Business Applications"],correct:[2],explain:"Information Object opisuje logiczne dane (typy, klasy danych) w relacji do Business Applications."},
+  {id:200,domain:"csdm",source:"et",type:"single",q:"Na którym etapie CSDM ITSM Manager używa Technology Management Offerings do populowania support group powiązanych CIs?",opts:["Run","Walk","Foundation","Fly","Crawl"],correct:[1],explain:"Walk stage: Technology Management Offerings są używane do populowania support group CIs."},
+  {id:201,domain:"csdm",source:"et",type:"single",q:"Configuration Manager wdraża end-to-end service modeling. Gdzie szuka guidance dotyczącego statusu i playbooks?",opts:["CMDB Data Foundation Dashboard","Service Mapping Data Foundation Dashboard","CSDM Data Foundation Dashboard","CMDB Workspace"],correct:[2],explain:"CSDM Data Foundation Dashboard dostarcza guidance dla end-to-end service modeling."},
+  {id:202,domain:"csdm",source:"et",type:"multi",q:"Administrator używa CSDM Data Foundations Dashboard playbooks z Run tab. Jakie relacje CSDM? (Choose two.)",opts:["Business Applications that have their relationships to Information Objects","Business Applications that have relationships to Application Services","Logical CIs that have relationships with Information Objects","Locations that have established parent records"],correct:[0,1],explain:"Run tab playbooks: BA→Information Objects + BA→Application Services relationships."},
+  {id:203,domain:"csdm",source:"et",type:"multi",q:"Które klasy CSDM są używane na formularzu Incident? (Choose two.)",opts:["Application Service","Service Offering","Business Application","Service Portfolio"],correct:[0,1],explain:"Formularz Incident używa: Application Service + Service Offering z CSDM."},
+  {id:204,domain:"csdm",source:"et",type:"single",q:"Business Relationship Manager chce wdrożyć Service Portfolio Management i prezentować offerings business consumers. Który CSDM Domain?",opts:["Design and Planning (Design)","Service Consumption (Sell/Consume)","Service Delivery","Build and Integration (Build)"],correct:[1],explain:"Service Portfolio Management z offerings dla consumers → Service Consumption (Sell/Consume) domain."},
+  {id:205,domain:"csdm",source:"et",type:"multi",q:"Jak CMDB jest wyrównany z business processes? (Choose two.)",opts:["Enables the CFO/CIO to track software licenses","Enhances decision-making and operational efficiency across the organization","Extends service delivery management to all enterprise departments","Provides a centralized view of configuration items and their relationships"],correct:[1,3],explain:"CMDB: poprawia decyzje i efektywność operacyjną + centralny widok CIs i ich relacji."},,
+
+    // ── DRAG DROP → pytania definicyjne (ET) ─────────────────────────────
+  // T1Q2: Application Service types
+  {id:300,domain:"config",source:"et",type:"single",q:"[DD] Który typ Application Service jest tworzony ręcznie, statycznie – bez automatycznego odkrywania?",opts:["Dynamic CI Group (Query-Based)","Manual Application Service","Tag-Based Application Service","Top-Down Discovery (Service Mapping)"],correct:[1],explain:"Manual Application Service = ręcznie tworzony, statyczny zestaw CIs."},
+  {id:301,domain:"config",source:"et",type:"single",q:"[DD] Który typ Application Service jest automatycznie odkrywany od entry point przez Service Mapping?",opts:["Manual Application Service","Tag-Based Application Service","Top-Down Discovery (Service Mapping)","Dynamic CI Group"],correct:[2],explain:"Top-Down Discovery przez Service Mapping odkrywa Application Service od entry point do infrastruktury."},
+  {id:302,domain:"config",source:"et",type:"single",q:"[DD] Który typ Application Service jest dynamicznie generowany na podstawie CMDB Group saved/encoded query?",opts:["Manual Application Service","Top-Down Discovery","Tag-Based Application Service","Dynamic CI Group (Query-Based)"],correct:[3],explain:"Dynamic CI Group (Query-Based) = Application Service na bazie CMDB saved/encoded query."},
+  {id:303,domain:"config",source:"et",type:"single",q:"[DD] Który typ Application Service jest tworzony automatycznie z CIs mających określone tagi (typowo cloud)?",opts:["Manual","Top-Down Discovery","Tag-Based Application Service","Dynamic CI Group"],correct:[2],explain:"Tag-Based Application Service tworzony z CIs z określonymi tagami (np. cloud tagging)."},
+  // T2Q12: design architecture → management tool
+  {id:304,domain:"ingest",source:"et",type:"single",q:"[DD] Które narzędzie zarządza ingestion z 3rd-party i obsługuje field-to-field mappings przez IRE?",opts:["CMDB Workspace","IntegrationHub ETL","CI Class Manager","CMDB Data Manager"],correct:[1],explain:"IntegrationHub ETL = ingestion z 3rd-party z IRE i field-to-field mappings."},
+  {id:305,domain:"ingest",source:"et",type:"single",q:"[DD] Które narzędzie zapewnia pre-built connectors z fastest time to value?",opts:["IntegrationHub ETL","Import Sets","Service Graph Connectors","Agent Client Collector"],correct:[2],explain:"Service Graph Connectors = pre-built, fastest time to value."},
+  {id:306,domain:"ingest",source:"et",type:"single",q:"[DD] Które narzędzie zbiera dane z urządzeń w secure/intermittently-connected środowiskach?",opts:["SGC","IntegrationHub ETL","ServiceNow Discovery","Agent Client Collector (ACC)"],correct:[3],explain:"ACC = urządzenia w secure env i intermittently connected."},
+  // T2Q17: Product → description
+  {id:307,domain:"ingest",source:"et",type:"single",q:"[DD] Które ServiceNow solution wykonuje agentless network scanning i automatycznie odkrywa CIs?",opts:["SGC","Agent Client Collector","ServiceNow Discovery","IntegrationHub ETL"],correct:[2],explain:"ServiceNow Discovery = agentless, skanuje sieć, odkrywa i populuje CMDB."},
+  {id:308,domain:"ingest",source:"et",type:"single",q:"[DD] Które ServiceNow solution mapuje Application Services od entry point do infrastruktury (top-down)?",opts:["ServiceNow Discovery","IntegrationHub ETL","Service Mapping","CMDB 360"],correct:[2],explain:"Service Mapping = top-down discovery Application Services."},
+  // T3: CMDB Health metrics → scorecard
+  {id:309,domain:"govern",source:"et",type:"single",q:"[DD] Stale CIs, Duplicate CIs, Orphan CIs – do którego scorecard?",opts:["Completeness","Compliance","Correctness","Foundation"],correct:[2],explain:"Correctness scorecard: Stale + Duplicate + Orphan CIs."},
+  {id:310,domain:"govern",source:"et",type:"single",q:"[DD] Required fields i Recommended fields – do którego scorecard?",opts:["Correctness","Compliance","Completeness","Governance"],correct:[2],explain:"Completeness scorecard: Required fields + Recommended fields."},
+  {id:311,domain:"govern",source:"et",type:"single",q:"[DD] Audits (compliance, patch level) – do którego CMDB Health scorecard?",opts:["Correctness","Completeness","Compliance","Foundation"],correct:[2],explain:"Compliance scorecard: Audits (np. patch level)."},
+  {id:312,domain:"govern",source:"et",type:"single",q:"[DD] CI nie był aktualizowany od 60+ dni – jaki typ metryki?",opts:["Completeness – Required fields","Correctness – Duplicate CI","Correctness – Stale CI","Compliance – Audit"],correct:[2],explain:"Correctness – Stale CI: CI nieaktualizowany przez staleness period (domyślnie 60 dni)."},
+  {id:313,domain:"govern",source:"et",type:"single",q:"[DD] CI nie ma powiązania z żadnym Business Service ani Tech Mgmt Service – jaki typ metryki?",opts:["Correctness – Stale CI","Correctness – Orphan CI","Completeness – Required fields","Compliance – Audit"],correct:[1],explain:"Correctness – Orphan CI: CI bez relacji do serwisu."},
+  // T3Q18: Role → job description
+  {id:314,domain:"govern",source:"et",type:"single",q:"[DD] Która rola CMDB definiuje strukturę klas, hierarchię i reguły identyfikacji?",opts:["Configuration Manager","CI Class Owner","CMDB Architect","Service Owner"],correct:[2],explain:"CMDB Architect = struktura klas, hierarchia, reguły IRE."},
+  {id:315,domain:"govern",source:"et",type:"single",q:"[DD] Która rola CMDB zarządza lifecycle CI i zapewnia dokładność danych?",opts:["CMDB Architect","Configuration Manager","CI Class Owner","Platform Owner"],correct:[1],explain:"Configuration Manager = lifecycle CI, dokładność danych CMDB."},
+  {id:316,domain:"govern",source:"et",type:"single",q:"[DD] Która rola CMDB odpowiada za jakość danych konkretnej klasy CI?",opts:["CMDB Architect","Configuration Manager","CI Class Owner","Service Desk Analyst"],correct:[2],explain:"CI Class Owner = jakość danych konkretnej klasy."},
+  // T3Q19: Deduplication feature → outcome
+  {id:317,domain:"govern",source:"et",type:"single",q:"[DD] Które narzędzie pozwala ręcznie scalić dwa duplikaty z wyborem Main CI i mergowaniem relacji?",opts:["CMDB Health Dashboard","Duplicate CI Remediator","De-duplication Template","IRE Rules"],correct:[1],explain:"Duplicate CI Remediator = wizard do scalania duplikatów."},
+  {id:318,domain:"govern",source:"et",type:"single",q:"[DD] Które narzędzie pozwala hurtowo remediate wiele podobnych duplikatów?",opts:["Duplicate CI Remediator","IRE Identification Rules","De-duplication Template","CMDB Data Manager"],correct:[2],explain:"De-duplication Template = bulk remediation."},
+  {id:319,domain:"govern",source:"et",type:"single",q:"[DD] Które narzędzie automatycznie wykrywa i zapobiega duplikatom podczas ingestion?",opts:["De-duplication Template","Duplicate CI Remediator","IRE (Identification & Reconciliation Engine)","CMDB Data Manager"],correct:[2],explain:"IRE automatycznie wykrywa duplikaty podczas przetwarzania."},
+  // T4Q1: ServiceNow product → Incident Management value
+  {id:320,domain:"insight",source:"et",type:"single",q:"[DD] Który ServiceNow product dostarcza wartość dla Incident Management przez binding alertów do CIs?",opts:["Service Mapping","CMDB 360","Event Management","Change Management"],correct:[2],explain:"Event Management binduje alerty do konkretnych CIs."},
+  {id:321,domain:"insight",source:"et",type:"single",q:"[DD] Który ServiceNow product dostarcza wartość dla Incident Management przez mapowanie serwisów i business impact?",opts:["Event Management","CMDB Data Manager","Service Mapping","CI Class Manager"],correct:[2],explain:"Service Mapping dostarcza Application Service maps → business impact."},
+  {id:322,domain:"insight",source:"et",type:"single",q:"[DD] Który ServiceNow product dostarcza wartość dla Incident Management przez auto-populację Assignment Group z CI?",opts:["Service Mapping","Event Management","CMDB (CI record)","CMDB Data Manager"],correct:[2],explain:"CMDB CI record zawiera Assignment/Support Group → auto-populate na Incident."},
+  // T5Q5: Life cycle attributes
+  {id:323,domain:"csdm",source:"et",type:"single",q:"[DD] Który CSDM atrybut opisuje ogólny etap lifecycle CI (np. In Use, Retiring)?",opts:["Life Cycle Stage Status","Life Cycle Stage","Install Status","Operational Status"],correct:[1],explain:"Life Cycle Stage = główny etap lifecycle (In Design, In Use, Retiring, Retired)."},
+  {id:324,domain:"csdm",source:"et",type:"single",q:"[DD] Który CSDM atrybut opisuje szczegółowy status w ramach danego etapu?",opts:["Life Cycle Stage","Operational Status","Life Cycle Stage Status","Install Status"],correct:[2],explain:"Life Cycle Stage Status = szczegółowy status w ramach Life Cycle Stage."},
+  // T5Q16: CMDB objects → CSDM domains
+  {id:325,domain:"csdm",source:"et",type:"single",q:"[DD] Do którego CSDM domain należy Business Application?",opts:["Foundation","Service Delivery","Build and Integration","Design and Planning"],correct:[3],explain:"Business Application = Design and Planning domain."},
+  {id:326,domain:"csdm",source:"et",type:"single",q:"[DD] Do którego CSDM domain należy Application Service (Service Instance)?",opts:["Foundation","Design and Planning","Service Delivery","Service Consumption"],correct:[2],explain:"Application Service = Service Delivery domain."},
+  {id:327,domain:"csdm",source:"et",type:"single",q:"[DD] Do którego CSDM domain należy Business Service Offering?",opts:["Service Delivery","Build and Integration","Design and Planning","Service Consumption"],correct:[3],explain:"Business Service Offering = Service Consumption (Sell/Consume)."},
+  {id:328,domain:"csdm",source:"et",type:"single",q:"[DD] Do którego CSDM domain należą Company, Business Unit, Department, Location?",opts:["Service Delivery","Design and Planning","Foundation","Build and Integration"],correct:[2],explain:"Company, BU, Department, Location = Foundation domain. NIE są CI!"},
+  {id:329,domain:"csdm",source:"et",type:"single",q:"[DD] Do którego CSDM domain należy Technology Management Service?",opts:["Foundation","Service Consumption","Design and Planning","Service Delivery"],correct:[3],explain:"Technology Management Service = Service Delivery domain."},
+  // T5Q22: Service types → definitions
+  {id:330,domain:"csdm",source:"et",type:"single",q:"[DD] Która klasa CSDM reprezentuje jak klient/biznes widzi serwis (single level, IPC)?",opts:["Technology Management Service","Application Service","Business Service","Service Offering"],correct:[2],explain:"Business Service (cmdb_ci_service_business) = widok klienta, single level, IPC."},
+  {id:331,domain:"csdm",source:"et",type:"single",q:"[DD] Która klasa CSDM to deployed, operacyjna instancja aplikacji?",opts:["Business Service","Technology Management Service","Business Service Offering","Application Service / Service Instance"],correct:[3],explain:"Application Service / Service Instance (cmdb_ci_service_auto) = operacyjna instancja."},
+  {id:332,domain:"csdm",source:"et",type:"single",q:"[DD] Która klasa CSDM zarządza technologią od strony IT provider i synchronizuje grupy na CIs?",opts:["Business Service","Application Service","Technology Management Service","Business Service Offering"],correct:[2],explain:"Technology Management Service (cmdb_ci_service_technical) = IT provider view, sync grup."},
+  {id:333,domain:"csdm",source:"et",type:"single",q:"[DD] Która klasa CSDM to konkretna oferta serwisowa z SLA/OLA dla konsumentów?",opts:["Business Service","Technology Management Service","Application Service","Service Offering"],correct:[3],explain:"Service Offering = oferta z warunkami SLA/OLA dla konsumentów."},
+  // T5Q23: Domain → governance roles
+  {id:334,domain:"csdm",source:"et",type:"single",q:"[DD] Kto jest kluczowym governance stakeholderem Foundation domain?",opts:["Application Service Owner","Enterprise Architect","HR/Location Manager / Business Unit Owner","Technology Service Owner"],correct:[2],explain:"Foundation domain: HR Manager, Location Manager, Business Unit Owner."},
+  {id:335,domain:"csdm",source:"et",type:"single",q:"[DD] Kto jest kluczowym governance stakeholderem Service Delivery domain?",opts:["Enterprise Architect","Business Relationship Manager","Application Owner","Technology Service Owner"],correct:[3],explain:"Service Delivery domain: Technology Service Owner."},
+  // T5Q24: CSDM domains → benefits
+  {id:336,domain:"csdm",source:"et",type:"single",q:"[DD] Jaki jest główny benefit Foundation domain CSDM?",opts:["Mapowanie relacji serwisowych","Dane organizacyjne (Company, BU, Location) jako fundament","Implementacja polityk lifecycle","Modelowanie Business Applications"],correct:[1],explain:"Foundation = baza danych organizacyjnych, fundament całego CSDM."},
+  {id:337,domain:"csdm",source:"et",type:"single",q:"[DD] Jaki jest główny benefit Service Delivery domain CSDM?",opts:["Dane organizacyjne","Business Capabilities","Operational services dla ITSM (Incident/Change/Problem)","Lifecycle produktów"],correct:[2],explain:"Service Delivery = operational services (Business Service, Tech Mgmt, App Service) zasilające ITSM."},
+
+];
+
+// ===================== FLASHCARD LOGIC =====================
+let fcData = [...flashcards];
+let fcIndex = 0;
+let fcFilter = "all";
+
+function filterFC() {
+  fcFilter = document.getElementById('fc-filter').value;
+  fcData = fcFilter === "all" ? [...flashcards] : flashcards.filter(f => f.tag === fcFilter);
+  fcIndex = 0;
+  renderFC();
+}
+document.getElementById('fc-filter').addEventListener('change', filterFC);
+
+function shuffleFC() {
+  filterFC();
+  for (let i = fcData.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [fcData[i], fcData[j]] = [fcData[j], fcData[i]];
+  }
+  renderFC();
+}
+
+function resetFC() {
+  document.getElementById('fc-filter').value = "all";
+  fcFilter = "all";
+  fcData = [...flashcards];
+  fcIndex = 0;
+  renderFC();
+}
+
+function renderFC() {
+  if (!fcData.length) return;
+  const f = fcData[fcIndex];
+  const tagNames = {config:'Configuration', ingest:'Ingest', govern:'Govern', csdm:'CSDM', insight:'Insight'};
+  document.getElementById('fc-tag').textContent = tagNames[f.tag] || f.tag;
+  document.getElementById('fc-q').textContent = f.q;
+  document.getElementById('fc-a').textContent = f.a;
+  document.getElementById('fc-a').classList.remove('show');
+  document.getElementById('fc-counter').textContent = `${fcIndex + 1} / ${fcData.length}`;
+}
+
+function toggleAnswer() {
+  document.getElementById('fc-a').classList.toggle('show');
+}
+function nextFC() { fcIndex = (fcIndex + 1) % fcData.length; renderFC(); }
+function prevFC() { fcIndex = (fcIndex - 1 + fcData.length) % fcData.length; renderFC(); }
+renderFC();
+
+// ===================== QUIZ LOGIC =====================
+let quizQuestions = [];
+let answered = 0;
+let correct_count = 0;
+
+function startQuiz() {
+  const domain = document.getElementById('quiz-domain').value;
+  const count = parseInt(document.getElementById('quiz-count').value);
+  let pool = domain === 'all' ? [...questions] : questions.filter(q => q.domain === domain);
+  pool = pool.sort(() => Math.random() - 0.5).slice(0, Math.min(count, pool.length));
+  quizQuestions = pool;
+  answered = 0;
+  correct_count = 0;
+  const scoreDiv = document.getElementById('quiz-score');
+  scoreDiv.classList.remove('show');
+  scoreDiv.innerHTML = '';
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  const domainNames = {config:'Configuration',ingest:'Ingest',govern:'Govern',csdm:'CSDM',insight:'Insight'};
+  container.innerHTML = quizQuestions.map((q, qi) => {
+    const multi = q.correct.length > 1;
+    const opts = q.opts.map((o, oi) => `
+      <li><button class="opt-btn" id="opt-${qi}-${oi}" onclick="selectOpt(${qi}, ${oi})">${String.fromCharCode(65+oi)}. ${o}</button></li>
+    `).join('');
+    return `
+      <div class="q-block" id="qblock-${qi}">
+        <div class="q-header">
+          <span class="q-num">Q${qi+1}</span>
+          <span class="q-domain">${domainNames[q.domain]}</span>
+          ${multi ? '<span class="q-domain" style="color:#6c8aff">wybierz '+q.correct.length+'</span>' : ''}
+          <span class="q-text">${q.q}</span>
+        </div>
+        <ul class="opt-list">${opts}</ul>
+        <button class="check-btn" id="check-${qi}" onclick="checkAnswer(${qi})" disabled>Sprawdź</button>
+        <div class="q-explain" id="explain-${qi}">${q.explain}</div>
+      </div>
+    `;
+  }).join('');
+  quizQuestions.forEach((q, qi) => { window['sel_'+qi] = []; });
+}
+
+function selectOpt(qi, oi) {
+  const q = quizQuestions[qi];
+  const btn = document.getElementById(`opt-${qi}-${oi}`);
+  if (btn.disabled) return;
+  const selKey = 'sel_'+qi;
+  if (q.correct.length === 1) {
+    window[selKey] = [oi];
+    q.opts.forEach((_, i) => document.getElementById(`opt-${qi}-${i}`).classList.remove('selected'));
+    btn.classList.add('selected');
+  } else {
+    if (btn.classList.contains('selected')) {
+      btn.classList.remove('selected');
+      window[selKey] = window[selKey].filter(x => x !== oi);
+    } else {
+      btn.classList.add('selected');
+      window[selKey].push(oi);
+    }
+  }
+  document.getElementById(`check-${qi}`).disabled = window[selKey].length === 0;
+}
+
+function checkAnswer(qi) {
+  const q = quizQuestions[qi];
+  const sel = window['sel_'+qi] || [];
+  const correct = q.correct;
+  const isCorrect = sel.length === correct.length && sel.every(s => correct.includes(s));
+  q.opts.forEach((_, oi) => {
+    const btn = document.getElementById(`opt-${qi}-${oi}`);
+    btn.disabled = true;
+    if (correct.includes(oi)) btn.classList.add('correct');
+    else if (sel.includes(oi)) btn.classList.add('wrong');
+  });
+  document.getElementById(`check-${qi}`).disabled = true;
+  document.getElementById(`explain-${qi}`).classList.add('show');
+  if (isCorrect) correct_count++;
+  answered++;
+  if (answered === quizQuestions.length) showScore();
+}
+
+function showScore() {
+  const pct = Math.round((correct_count / quizQuestions.length) * 100);
+  const pass = pct >= 70;
+  const scoreDiv = document.getElementById('quiz-score');
+  scoreDiv.innerHTML = `
+    <p>Wynik końcowy</p>
+    <div class="score-big ${pass ? 'pass' : 'fail'}">${pct}%</div>
+    <p>${correct_count} / ${quizQuestions.length} poprawnych odpowiedzi</p>
+    <p style="margin-top:8px; font-size:13px; color:var(--${pass?'correct':'wrong'})">${pass ? '✅ PASS – dobry wynik!' : '❌ Poniżej 70% – wróć do nauki!'}</p>
+    <button onclick="startQuiz()" style="margin-top:12px; background:var(--accent); border:none; color:white; padding:8px 20px; border-radius:6px; cursor:pointer;">Nowy quiz</button>
+  `;
+  scoreDiv.classList.add('show');
+  scoreDiv.scrollIntoView({behavior:'smooth'});
+}
+
+// ===================== POOL LOGIC =====================
+function renderPool() {
+  const domainF = document.getElementById('pool-domain-filter').value;
+  const sourceF = document.getElementById('pool-source-filter').value;
+  const search = (document.getElementById('pool-search').value || '').toLowerCase();
+
+  let pool = questions.filter(q => {
+    if (domainF !== 'all' && q.domain !== domainF) return false;
+    if (sourceF !== 'all' && q.source !== sourceF) return false;
+    if (search && !q.q.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const domainNames = {config:'Configuration',ingest:'Ingest',govern:'Govern',csdm:'CSDM',insight:'Insight'};
+  const etCount = pool.filter(q => q.source === 'et').length;
+  const myCount = pool.filter(q => q.source === 'my').length;
+
+  document.getElementById('pool-stats').innerHTML =
+    `<span>Łącznie: <strong>${pool.length}</strong></span>` +
+    `<span style="color:var(--accent2)">ExamTopics: <strong>${etCount}</strong></span>` +
+    `<span style="color:var(--accent)">Dodatkowe: <strong>${myCount}</strong></span>` +
+    `<span>Łącznie w bazie: <strong>${questions.length}</strong> pytań</span>`;
+
+  const tbody = document.getElementById('pool-tbody');
+  if (!pool.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:20px;">Brak pytań</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = pool.map((q) => {
+    const corrLetters = q.correct.map(c => String.fromCharCode(65+c)).join(', ');
+    const corrTexts = q.correct.map(c => q.opts[c]).join(' / ');
+    const typeLabel = q.type === 'multi' ? 'Multi' : 'Single';
+    const srcClass = q.source === 'et' ? 'source-et' : 'source-my';
+    const srcBadge = q.source === 'et'
+      ? '<span class="src-badge et">ExamTopics</span>'
+      : '<span class="src-badge my">Dodatkowe</span>';
+    return `<tr class="${srcClass}">
+      <td style="text-align:center;font-weight:700;color:var(--text)">${q.id}</td>
+      <td>${srcBadge}</td>
+      <td><span class="dom-badge">${domainNames[q.domain]}</span></td>
+      <td><span class="type-badge">${typeLabel}</span></td>
+      <td class="q-cell">${q.q}</td>
+      <td><span class="ans-text">${corrLetters}</span><br><span style="font-size:11px;color:var(--text2)">${corrTexts}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ===================== TAB LOGIC =====================
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'pool') renderPool();
+}
+</script>
+</body>
+</html>
