@@ -119,6 +119,34 @@
   .badge.green { background: rgba(74,222,128,0.2); color: var(--accent2); }
   .badge.yellow { background: rgba(245,158,11,0.2); color: var(--warn); }
 
+  /* CSDM + rozszerzone karty */
+  .note-card.wide { grid-column: 1 / -1; }
+  .note-card.wide ul li { display: block; }
+  .note-card.wide ul li:before { display: inline; margin-right: 6px; }
+  .csdm-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 10px 0 14px; }
+  .note-card h4 { color: var(--warn); font-size: 13px; margin: 12px 0 5px; }
+  .note-card h4:first-child { margin-top: 4px; }
+  .stage-list { list-style: none; margin: 0; padding: 0; }
+  .stage-list li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 13px; color: var(--text2); border: none; padding: 0; }
+  .stage-list li:before { content: none; }
+  .sbadge { color: white; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .s-f { background: #64748b; } .s-c { background: #22c55e; } .s-w { background: #3b82f6; }
+  .s-r { background: #a855f7; } .s-fly { background: #f59e0b; }
+  .dt { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0; }
+  .dt th { background: var(--surface2); color: var(--accent); padding: 6px 10px; text-align: left; border: 1px solid var(--border); }
+  .dt td { padding: 5px 10px; border: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+  .dt tr:nth-child(even) td { background: #1c1f2d; }
+  .dt td strong { color: var(--text); }
+  .trap-box { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.35); border-radius: 8px; padding: 12px 14px; margin-top: 14px; }
+  .trap-box h4 { color: var(--warn); margin-top: 0 !important; border-bottom: 1px solid rgba(245,158,11,0.2); padding-bottom: 6px; }
+  .trap-box ul { list-style: none; padding: 0; margin: 0; }
+  .trap-box li { font-size: 13px; color: var(--text2); padding: 4px 0; border-bottom: 1px solid rgba(245,158,11,0.08); display: flex; gap: 8px; }
+  .trap-box li:before { content: '⚠️'; flex-shrink: 0; font-style: normal; }
+  .trap-box li strong { color: var(--warn); }
+  .cmp-box { background: var(--surface2); border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+  .cmp-box h4 { color: var(--accent2); margin-top: 0 !important; }
+  @media (max-width: 640px) { .csdm-inner { grid-template-columns: 1fr; } }
+
   /* POOL */
   .pool-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
   .pool-controls select, .pool-controls input { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 6px; font-size: 13px; }
@@ -238,6 +266,88 @@
 <!-- TAB: NOTES -->
 <div id="tab-notes" class="tab">
   <div class="notes-grid">
+
+    <!-- ══════════ CSDM 5 – FULL WIDTH ══════════ -->
+    <div class="note-card wide">
+      <h3>🗺️ CSDM 5 – Kompleksowe podsumowanie</h3>
+      <div class="csdm-inner">
+        <div>
+          <h4>Co to jest CSDM?</h4>
+          <ul>
+            <li><strong>Framework</strong> – NIE produkt, NIE licencja, NIE moduł do instalacji</li>
+            <li>Sposób organizacji i standaryzacji danych o usługach IT i biznesowych w ServiceNow</li>
+            <li>Wszystkie OOB tabele dostępne jako część platformy (<strong>ship z-boot</strong> lub free store apps)</li>
+            <li>NIE wymaga dodatkowych licencji ITOM Discovery</li>
+            <li>Elementy <strong>Foundation</strong> (Company, BU, Department, Location, User, Group) <strong>NIE są CI</strong></li>
+          </ul>
+          <h4>Kluczowe tabele / zmiana nazw w CSDM 5</h4>
+          <table class="dt">
+            <tr><th>Nazwa CSDM 5</th><th>Tabela</th><th>Dawniej</th></tr>
+            <tr><td><strong>Business Service</strong></td><td>cmdb_ci_service_business</td><td>bez zmian</td></tr>
+            <tr><td><strong>Technology Mgmt Service</strong></td><td>cmdb_ci_service_technical</td><td>Technical Service</td></tr>
+            <tr><td><strong>Service Instance</strong></td><td>cmdb_ci_service_auto</td><td>Application Service</td></tr>
+            <tr><td><strong>Service Offering</strong></td><td>service_offering</td><td>bez zmian</td></tr>
+            <tr><td><strong>Business Application</strong></td><td>cmdb_ci_business_app</td><td>bez zmian</td></tr>
+          </table>
+          <h4>3 podejścia implementacyjne</h4>
+          <ul>
+            <li><strong>Outcome Centric</strong> – zacznij od wyników biznesowych, dobierz domeny</li>
+            <li><strong>Domain Centric</strong> – skup się na konkretnej domenie (np. tylko Service Delivery)</li>
+            <li><strong>Step-wise</strong> – stopniowe dojrzewanie wg etapów Crawl → Walk → Run → Fly</li>
+          </ul>
+        </div>
+        <div>
+          <h4>5 etapów implementacji (maturity stages)</h4>
+          <ul class="stage-list">
+            <li><span class="sbadge s-f">Foundation</span>Company, BU, Department, Location, User, Group – podstawowe dane, Hardware CIs</li>
+            <li><span class="sbadge s-c">Crawl</span>Business Services + Technology Mgmt Services, podstawowe relacje CI↔Service</li>
+            <li><span class="sbadge s-w">Walk</span>Service Instances (dawniej App Services), Service Offerings, lepsze mapowania</li>
+            <li><span class="sbadge s-r">Run</span>Pełny model serwisowy, Dynamic CI Groups, Service Portfolios, compliance</li>
+            <li><span class="sbadge s-fly">Fly</span>Automatyzacja, AI/ML insights, pełna widoczność biznes ↔ IT</li>
+          </ul>
+          <h4>Operational CIs (używane w ITSM/IPC)</h4>
+          <ul>
+            <li><strong>Business Service</strong> – jak klient widzi usługę</li>
+            <li><strong>Technology Mgmt Service</strong> – jak IT zarządza usługą</li>
+            <li><strong>Service Instance</strong> – instancja aplikacji na infrastrukturze</li>
+          </ul>
+          <h4>Grupy synchronizowane z Tech Mgmt Service Offering na CI</h4>
+          <ul>
+            <li><strong>Managed by Group</strong> + <strong>Support Group</strong> + <strong>Change Group</strong></li>
+            <li>Priorytet: Tech Mgmt Offering <strong>override</strong> CI Class Manager</li>
+            <li>NIE synchronizuje: Approval Group</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>7 domen CSDM i co zawierają</h4>
+      <table class="dt">
+        <tr><th>Domena</th><th>Co zawiera</th><th>Etap</th></tr>
+        <tr><td><strong>Foundation Data</strong></td><td>Company, BU, Department, Location, User, Group <em>(NIE są CI!)</em></td><td><span class="sbadge s-f">Wszystkie</span></td></tr>
+        <tr><td><strong>Ideation &amp; Strategy</strong></td><td>Business Capabilities, produkty, kierunek strategiczny</td><td><span class="sbadge s-fly">Fly</span></td></tr>
+        <tr><td><strong>Design &amp; Planning</strong></td><td>Service Portfolios, Business Applications, Technology Products</td><td><span class="sbadge s-r">Run</span>–<span class="sbadge s-fly">Fly</span></td></tr>
+        <tr><td><strong>Build &amp; Integration</strong></td><td>Application/Service Instances, CMDB, Hardware CIs, relacje</td><td><span class="sbadge s-w">Walk</span>–<span class="sbadge s-r">Run</span></td></tr>
+        <tr><td><strong>Service Delivery</strong></td><td>Incydenty, Zmiany, Problemy obsługiwane w kontekście serwisowym</td><td><span class="sbadge s-c">Crawl</span>+</td></tr>
+        <tr><td><strong>Service Consumption</strong></td><td>Jak użytkownicy konsumują usługi (Service Catalog, Requests)</td><td><span class="sbadge s-r">Run</span>+</td></tr>
+        <tr><td><strong>Manage Portfolio</strong></td><td>Lifecycle usług, retirements, portfolio governance</td><td><span class="sbadge s-r">Run</span>–<span class="sbadge s-fly">Fly</span></td></tr>
+      </table>
+
+      <div class="trap-box">
+        <h4>⚠️ Na co uważać na egzaminie – CSDM 5</h4>
+        <ul>
+          <li>CSDM to <strong>NIE produkt / NIE SKU / NIE moduł</strong> – nie ma kodu do instalacji</li>
+          <li>Foundation: <strong>Company, Location, BU, User, Group NIE są CI</strong> – to dane referencyjne</li>
+          <li><strong>Technology Management Service</strong> = dawniej Technical Service (zmiana w CSDM 5!)</li>
+          <li><strong>Service Instance</strong> = dawniej Application Service (zmiana w CSDM 5!)</li>
+          <li>Grupy z Tech Mgmt Offering: <strong>Managed by + Support + Change</strong> (NIE Approval!)</li>
+          <li>CSDM NIE wymaga licencji ITOM – <strong>wszystkie OOB tabele są darmowe</strong></li>
+          <li>Business Service = perspektywa <strong>klienta</strong>; Tech Mgmt Service = perspektywa IT</li>
+          <li>Etap to <strong>Foundation → Crawl → Walk → Run → Fly</strong> (5 etapów, nie 4)</li>
+        </ul>
+      </div>
+    </div>
+    <!-- ══════════ /CSDM 5 ══════════ -->
+
     <div class="note-card">
       <h3>🔧 CI Class Manager – kluczowe fakty</h3>
       <ul>
@@ -370,6 +480,81 @@
         <li>Support Group na Incident po wybraniu CI → pochodzi ze <strong>Assignment Group</strong> (nie Support Group)</li>
       </ul>
     </div>
+
+    <!-- CMDB Workspace -->
+    <div class="note-card">
+      <h3>🖥️ CMDB Workspace – zakładki i funkcje</h3>
+      <ul>
+        <li><strong>Home tab</strong> → Important Actions (de-dup tasks, IRE issues), Health overview</li>
+        <li><strong>My Work tab</strong> → Data Manager tasks przypisane do Ciebie (Attestation, Certification)</li>
+        <li><strong>Management tab</strong> → Data Manager tasks dla menedżera (Attestation, Certification policies)</li>
+        <li><strong>Health tab</strong> → CMDB Health Dashboard (Correctness, Completeness, Compliance)</li>
+        <li><strong>SGC Central tab</strong> → zarządzanie Service Graph Connectors</li>
+        <li>De-dup tasks (IRE): Home → <strong>Important Actions</strong></li>
+        <li>NLQ (Natural Language Query) tworzone i uruchamiane z <strong>CMDB Workspace</strong></li>
+        <li>Playbooks dostępne w: <strong>CMDB Data Foundations Dashboard</strong> (nie Workspace!)</li>
+      </ul>
+    </div>
+
+    <!-- Discovery vs Service Mapping -->
+    <div class="note-card">
+      <h3>🔍 Discovery vs Service Mapping – porównanie</h3>
+      <table class="dt">
+        <tr><th>Cecha</th><th>Discovery</th><th>Service Mapping</th></tr>
+        <tr><td>Kierunek</td><td>Bottom-up (hardware → software)</td><td>Top-down (entry point → dependencies)</td></tr>
+        <tr><td>Relacje</td><td>Automatyczne relacje sprzęt/sieć</td><td>Automatyczne relacje <strong>Application Service</strong></td></tr>
+        <tr><td>Zakres sieci</td><td>LAN (agentless, sieć lokalna)</td><td>Application connectivity (porty/procesy)</td></tr>
+        <tr><td>Agent</td><td>Agentless (MID Server)</td><td>Agentless (MID Server)</td></tr>
+        <tr><td>Wynik</td><td>Hardware CIs, Network, Server</td><td>Application Service map</td></tr>
+        <tr><td>Licencja</td><td>ITOM Discovery</td><td>ITOM Service Mapping</td></tr>
+      </table>
+      <ul style="margin-top:10px">
+        <li><strong>ACC (Agent Client Collector)</strong> = środowiska bezpieczne + intermittently connected</li>
+        <li>SGC (Service Graph Connector) = fastest time-to-value, pre-built integrations</li>
+        <li>Discovery source dla CI z assetu: <strong>SNAssetManagement</strong> (bez discovery)</li>
+      </ul>
+    </div>
+
+    <!-- Exam Traps Kompendium -->
+    <div class="note-card wide">
+      <h3>⚠️ Pułapki egzaminacyjne – kompendium</h3>
+      <div class="csdm-inner">
+        <div>
+          <h4>Mylące terminy i zmiany nazw</h4>
+          <table class="dt">
+            <tr><th>Stara nazwa</th><th>Nowa nazwa CSDM 5</th></tr>
+            <tr><td>Technical Service</td><td><strong>Technology Management Service</strong></td></tr>
+            <tr><td>Application Service</td><td><strong>Service Instance</strong></td></tr>
+          </table>
+          <h4>Co NIE jest CI</h4>
+          <ul>
+            <li>Company, BU, Department, Location, User, Group → <strong>Foundation data</strong></li>
+            <li>CSDM jako całość → to <strong>framework</strong>, nie CI</li>
+          </ul>
+          <h4>Priorytety reconciliation (IRE)</h4>
+          <ul>
+            <li>Niższy numer = wyższy priorytet (<strong>100 &gt; 200</strong>)</li>
+            <li>Każde źródło może <strong>INSERT</strong> niezależnie od priorytetu</li>
+            <li>Niższy priorytet <strong>NIE może update</strong> wyższy (bez Data Refresh Rules)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Częste pułapki quizowe</h4>
+          <ul>
+            <li>CMDB Groups: <strong>Saved queries + Encoded queries</strong> (NIE Tag-based, NIE Scripted)</li>
+            <li>Compliance scorecard wymaga: <strong>Audit</strong> (nie tylko Certification Filter)</li>
+            <li>Playbooks <strong>NIE naprawiają automatycznie</strong> – pomagają analizować</li>
+            <li>SGC customization → <strong>skipped change created</strong> (nie error, nie rollback)</li>
+            <li>Po customizacji SGC → <strong>klient odpowiada</strong> za support tych zmian</li>
+            <li>Stale CIs mierzone przez: <strong>sys_updated_on</strong></li>
+            <li>Assignment Group na Incident pochodzi z <strong>CI → Support Group</strong></li>
+            <li>De-dup tasks: CMDB Workspace → Home → <strong>Important Actions</strong></li>
+            <li>Data Manager → My Work tab = <strong>zadania dla mnie</strong>; Management tab = <strong>dla managera</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
