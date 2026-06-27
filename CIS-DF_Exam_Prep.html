@@ -1204,6 +1204,21 @@ let correct_count = 0;
 let currentQuizMeta = { mode: 'normal', domain: 'all', source: 'all' };
 let currentQuizDetail = [];
 
+// Tasuje opcje pojedynczego pytania, przeliczając indeksy poprawnych odpowiedzi
+// oraz odwołania literowe w wyjaśnieniu (np. "(B)" -> nowa litera). Nie zmienia oryginału.
+function shuffleQuestion(q) {
+  const order = q.opts.map((_, i) => i).sort(() => Math.random() - 0.5);
+  const newOpts = order.map(i => q.opts[i]);
+  const newCorrect = [];
+  const letterMap = {};
+  order.forEach((oldIdx, newIdx) => {
+    if (q.correct.includes(oldIdx)) newCorrect.push(newIdx);
+    letterMap[String.fromCharCode(65 + oldIdx)] = String.fromCharCode(65 + newIdx);
+  });
+  const newExplain = (q.explain || '').replace(/\(([A-H])\)/g, (m, L) => letterMap[L] ? '(' + letterMap[L] + ')' : m);
+  return Object.assign({}, q, { opts: newOpts, correct: newCorrect, explain: newExplain });
+}
+
 function startQuiz(customPool, mode) {
   let pool, meta;
   if (customPool) {
@@ -1220,7 +1235,7 @@ function startQuiz(customPool, mode) {
     if (countVal !== 'all') pool = pool.slice(0, Math.min(parseInt(countVal), pool.length));
     meta = { mode: 'normal', domain, source };
   }
-  quizQuestions = pool;
+  quizQuestions = pool.map(shuffleQuestion);
   currentQuizMeta = meta;
   currentQuizDetail = [];
   answered = 0;
