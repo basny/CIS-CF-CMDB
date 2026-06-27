@@ -119,6 +119,30 @@
   .badge.green { background: rgba(74,222,128,0.2); color: var(--accent2); }
   .badge.yellow { background: rgba(245,158,11,0.2); color: var(--warn); }
 
+  /* STATS */
+  .stats-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .stat-card .num { font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .stat-card .num.green { color: var(--accent2); }
+  .stat-card .num.warn { color: var(--warn); }
+  .stat-card .lbl { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .stats-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stats-actions button { background: var(--accent); border: none; color: #fff; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .stats-actions .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .stats-actions .danger { color: var(--danger); border-color: rgba(248,113,113,0.4); }
+  .q-status { font-size: 10px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .q-status.unseen { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .q-status.weak { background: rgba(245,158,11,0.15); color: var(--warn); border: 1px solid rgba(245,158,11,0.4); }
+  .q-status.mastered { background: rgba(34,197,94,0.15); color: var(--correct); border: 1px solid rgba(34,197,94,0.4); }
+  .acc-bar { background: var(--border); border-radius: 4px; height: 6px; width: 64px; display: inline-block; vertical-align: middle; overflow: hidden; margin-right: 6px; }
+  .acc-bar > i { display: block; height: 6px; border-radius: 4px; }
+  .res-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+  .res-badge.correct { background: rgba(34,197,94,0.15); color: var(--correct); }
+  .res-badge.wrong { background: rgba(239,68,68,0.15); color: var(--wrong); }
+  .del-btn { background: transparent; border: 1px solid var(--border); color: var(--danger); border-radius: 6px; cursor: pointer; padding: 2px 9px; font-size: 12px; }
+  .del-btn:hover { background: rgba(248,113,113,0.12); }
+  .empty-msg { color: var(--text2); font-size: 13px; padding: 18px; text-align: center; }
+
   /* POOL */
   .pool-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
   .pool-controls select, .pool-controls input { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 6px; font-size: 13px; }
@@ -153,6 +177,7 @@
   <h1>🎯 CIS-DF Exam Prep (EN)</h1>
   <button class="tab-btn active" onclick="showTab('quiz')">✅ Quiz</button>
   <button class="tab-btn" onclick="showTab('pool')">📚 Question Pool</button>
+  <button class="tab-btn" onclick="showTab('stats')">📈 Statistics</button>
   <button class="tab-btn" onclick="showTab('plan')">📋 Study Plan</button>
   <button class="tab-btn" onclick="showTab('notes')">📝 Key Topics</button>
   <button class="tab-btn" onclick="showTab('flashcards')">🃏 Flashcards</button>
@@ -426,6 +451,52 @@
   </div>
   <div id="quiz-container"></div>
   <div id="quiz-score" class="quiz-score"></div>
+</div>
+
+<!-- TAB: STATS -->
+<div id="tab-stats" class="tab">
+  <div id="stats-summary" class="stats-cards"></div>
+
+  <div class="plan-section">
+    <h2>📊 Progress by domain</h2>
+    <div id="stats-domains"></div>
+  </div>
+
+  <div class="plan-section">
+    <h2>🗂️ Test history</h2>
+    <div class="stats-actions">
+      <button onclick="practiceWeak()">🔁 Practice weak / new questions</button>
+      <button class="btn-ghost" onclick="exportProgress()">⬇️ Export progress</button>
+      <button class="btn-ghost" onclick="document.getElementById('stats-import').click()">⬆️ Import</button>
+      <input type="file" id="stats-import" accept="application/json,.json" style="display:none" onchange="importProgress(event)">
+      <button class="btn-ghost danger" onclick="clearHistory()">🗑️ Clear history</button>
+      <button class="btn-ghost danger" onclick="resetAllStats()">⚠️ Reset everything</button>
+    </div>
+    <div id="stats-history"></div>
+  </div>
+
+  <div class="plan-section">
+    <h2>🎯 Per-question stats — what to review</h2>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Weak = last answer wrong or accuracy below 60%. New = not practiced yet.</p>
+    <div class="pool-controls">
+      <select id="stats-q-filter" onchange="renderQStatsTable()">
+        <option value="weak">To review (weak + new)</option>
+        <option value="all">All questions</option>
+        <option value="unseen">Not practiced</option>
+        <option value="wrong">Last answer wrong</option>
+        <option value="mastered">Mastered</option>
+      </select>
+      <select id="stats-q-domain" onchange="renderQStatsTable()">
+        <option value="all">All domains</option>
+        <option value="config">Configuration</option>
+        <option value="ingest">Ingest</option>
+        <option value="govern">Govern</option>
+        <option value="csdm">CSDM</option>
+        <option value="insight">Insight</option>
+      </select>
+    </div>
+    <div id="stats-qtable" class="pool-table-wrap"></div>
+  </div>
 </div>
 
 <!-- TAB: POOL -->
@@ -893,22 +964,38 @@ renderFC();
 let quizQuestions = [];
 let answered = 0;
 let correct_count = 0;
+let currentQuizMeta = { mode: 'normal', domain: 'all', source: 'all' };
+let currentQuizDetail = [];
 
-function startQuiz() {
-  const domain = document.getElementById('quiz-domain').value;
-  const source = document.getElementById('quiz-source').value;
-  const countVal = document.getElementById('quiz-count').value;
-  let pool = domain === 'all' ? [...questions] : questions.filter(q => q.domain === domain);
-  pool = pool.filter(Boolean);
-  if (source !== 'all') pool = pool.filter(q => q.source === source);
-  pool = pool.sort(() => Math.random() - 0.5);
-  if (countVal !== 'all') pool = pool.slice(0, Math.min(parseInt(countVal), pool.length));
+function startQuiz(customPool) {
+  let pool, meta;
+  if (customPool) {
+    pool = customPool;
+    meta = { mode: 'weak', domain: 'all', source: 'all' };
+  } else {
+    const domain = document.getElementById('quiz-domain').value;
+    const source = document.getElementById('quiz-source').value;
+    const countVal = document.getElementById('quiz-count').value;
+    pool = domain === 'all' ? [...questions] : questions.filter(q => q.domain === domain);
+    pool = pool.filter(Boolean);
+    if (source !== 'all') pool = pool.filter(q => q.source === source);
+    pool = pool.sort(() => Math.random() - 0.5);
+    if (countVal !== 'all') pool = pool.slice(0, Math.min(parseInt(countVal), pool.length));
+    meta = { mode: 'normal', domain, source };
+  }
   quizQuestions = pool;
+  currentQuizMeta = meta;
+  currentQuizDetail = [];
   answered = 0;
   correct_count = 0;
   const scoreDiv = document.getElementById('quiz-score');
   scoreDiv.classList.remove('show');
   scoreDiv.innerHTML = '';
+  if (!pool.length) {
+    document.getElementById('quiz-container').innerHTML =
+      '<div class="q-block"><p style="color:var(--text2)">No questions match the selected criteria. Adjust the filters and try again.</p></div>';
+    return;
+  }
   renderQuiz();
 }
 
@@ -972,6 +1059,8 @@ function checkAnswer(qi) {
   document.getElementById(`check-${qi}`).disabled = true;
   document.getElementById(`explain-${qi}`).classList.add('show');
   if (isCorrect) correct_count++;
+  recordQuestionResult(q.id, isCorrect);
+  currentQuizDetail.push({ id: q.id, correct: isCorrect });
   answered++;
   if (answered === quizQuestions.length) showScore();
 }
@@ -979,13 +1068,18 @@ function checkAnswer(qi) {
 function showScore() {
   const pct = Math.round((correct_count / quizQuestions.length) * 100);
   const pass = pct >= 70;
+  const saved = saveQuizResult(pct);
   const scoreDiv = document.getElementById('quiz-score');
   scoreDiv.innerHTML = `
     <p>Final score</p>
     <div class="score-big ${pass ? 'pass' : 'fail'}">${pct}%</div>
     <p>${correct_count} / ${quizQuestions.length} correct answers</p>
     <p style="margin-top:8px; font-size:13px; color:var(--${pass?'correct':'wrong'})">${pass ? '✅ PASS – great result!' : '❌ Below 70% – go back to studying!'}</p>
-    <button onclick="startQuiz()" style="margin-top:12px; background:var(--accent); border:none; color:white; padding:8px 20px; border-radius:6px; cursor:pointer;">New quiz</button>
+    ${saved ? '<p style="margin-top:6px; font-size:12px; color:var(--text2)">💾 Result saved — see the 📈 Statistics tab</p>' : ''}
+    <div style="margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+      <button onclick="startQuiz()" style="background:var(--accent); border:none; color:white; padding:8px 20px; border-radius:6px; cursor:pointer;">New quiz</button>
+      <button onclick="practiceWeak()" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:8px 20px; border-radius:6px; cursor:pointer;">🔁 Practice weak</button>
+    </div>
   `;
   scoreDiv.classList.add('show');
   scoreDiv.scrollIntoView({behavior:'smooth'});
@@ -1046,6 +1140,259 @@ function showTab(id) {
   document.getElementById('tab-'+id).classList.add('active');
   event.target.classList.add('active');
   if (id === 'pool') renderPool();
+  if (id === 'stats') renderStats();
+}
+
+// ===================== STATS / PROGRESS (localStorage) =====================
+const KEY_QSTATS = 'cisdf_qstats_v1';
+const KEY_RESULTS = 'cisdf_results_v1';
+const DOMAIN_NAMES = {config:'Configuration',ingest:'Ingest',govern:'Govern',csdm:'CSDM',insight:'Insight'};
+
+function loadQStats() { try { return JSON.parse(localStorage.getItem(KEY_QSTATS)) || {}; } catch (e) { return {}; } }
+function loadResults() { try { return JSON.parse(localStorage.getItem(KEY_RESULTS)) || []; } catch (e) { return []; } }
+
+function recordQuestionResult(id, isCorrect) {
+  try {
+    const stats = loadQStats();
+    const s = stats[id] || { seen: 0, correct: 0, lastResult: null, lastTs: 0 };
+    s.seen++;
+    if (isCorrect) s.correct++;
+    s.lastResult = isCorrect ? 'correct' : 'wrong';
+    s.lastTs = Date.now();
+    stats[id] = s;
+    localStorage.setItem(KEY_QSTATS, JSON.stringify(stats));
+  } catch (e) {}
+}
+
+function saveQuizResult(pct) {
+  try {
+    const results = loadResults();
+    results.push({
+      ts: Date.now(),
+      mode: currentQuizMeta.mode,
+      domain: currentQuizMeta.domain,
+      source: currentQuizMeta.source,
+      total: quizQuestions.length,
+      correct: correct_count,
+      pct: pct
+    });
+    localStorage.setItem(KEY_RESULTS, JSON.stringify(results));
+    return true;
+  } catch (e) { return false; }
+}
+
+function qStatus(s) {
+  if (!s || s.seen === 0) return 'unseen';
+  if (s.lastResult === 'wrong' || (s.correct / s.seen) < 0.6) return 'weak';
+  return 'mastered';
+}
+
+function getWeakPool() {
+  const stats = loadQStats();
+  return questions.filter(Boolean).filter(q => qStatus(stats[q.id]) !== 'mastered');
+}
+
+function practiceWeak() {
+  let pool = getWeakPool();
+  if (!pool.length) {
+    alert('No weak or new questions — everything is mastered! 🎉');
+    return;
+  }
+  pool = pool.sort(() => Math.random() - 0.5);
+  const countVal = document.getElementById('quiz-count').value;
+  if (countVal !== 'all') pool = pool.slice(0, Math.min(parseInt(countVal), pool.length));
+  // switch to the Quiz tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-quiz').classList.add('active');
+  document.querySelector(".tab-btn[onclick=\"showTab('quiz')\"]").classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  startQuiz(pool);
+}
+
+function renderStats() {
+  const stats = loadQStats();
+  const results = loadResults();
+  const all = questions.filter(Boolean);
+
+  // --- summary cards ---
+  let totSeen = 0, totCorrect = 0, uniqueSeen = 0;
+  all.forEach(q => { const s = stats[q.id]; if (s && s.seen > 0) { totSeen += s.seen; totCorrect += s.correct; uniqueSeen++; } });
+  const overallAcc = totSeen ? Math.round(totCorrect / totSeen * 100) : 0;
+  const bestPct = results.length ? Math.max.apply(null, results.map(r => r.pct)) : 0;
+  const avgPct = results.length ? Math.round(results.reduce((a, r) => a + r.pct, 0) / results.length) : 0;
+  const coverage = all.length ? Math.round(uniqueSeen / all.length * 100) : 0;
+  const weakCount = getWeakPool().length;
+
+  document.getElementById('stats-summary').innerHTML = `
+    <div class="stat-card"><div class="num">${results.length}</div><div class="lbl">tests completed</div></div>
+    <div class="stat-card"><div class="num ${overallAcc>=70?'green':overallAcc>=50?'warn':''}">${overallAcc}%</div><div class="lbl">overall accuracy (${totCorrect}/${totSeen})</div></div>
+    <div class="stat-card"><div class="num green">${avgPct}%</div><div class="lbl">average test score</div></div>
+    <div class="stat-card"><div class="num green">${bestPct}%</div><div class="lbl">best score</div></div>
+    <div class="stat-card"><div class="num">${uniqueSeen}/${all.length}</div><div class="lbl">questions practiced (${coverage}%)</div></div>
+    <div class="stat-card"><div class="num warn">${weakCount}</div><div class="lbl">to review (weak + new)</div></div>
+  `;
+
+  // --- progress by domain ---
+  const domOrder = ['config','ingest','govern','csdm','insight'];
+  document.getElementById('stats-domains').innerHTML = domOrder.map(d => {
+    const qs = all.filter(q => q.domain === d);
+    if (!qs.length) return '';
+    let seenU = 0, c = 0, se = 0;
+    qs.forEach(q => { const s = stats[q.id]; if (s && s.seen > 0) { seenU++; c += s.correct; se += s.seen; } });
+    const acc = se ? Math.round(c / se * 100) : 0;
+    const col = acc >= 70 ? 'var(--accent2)' : acc >= 50 ? 'var(--warn)' : 'var(--danger)';
+    return `<div class="domain-bar">
+      <span class="domain-label">${DOMAIN_NAMES[d]}</span>
+      <div class="bar-outer"><div class="bar-inner" style="width:${acc}%; background:${col}"></div></div>
+      <span class="pct" style="color:${col}">${se ? acc + '%' : '—'}</span>
+      <span style="font-size:11px; color:var(--text2); min-width:120px;">${seenU}/${qs.length} questions</span>
+    </div>`;
+  }).join('') || '<p class="empty-msg">No data yet — take your first quiz.</p>';
+
+  // --- test history ---
+  const histDiv = document.getElementById('stats-history');
+  if (!results.length) {
+    histDiv.innerHTML = '<p class="empty-msg">No completed tests. Take a quiz to see your history.</p>';
+  } else {
+    const modeLabel = { normal: 'Normal', weak: 'Review' };
+    const rows = results.map((r, i) => ({ r, i })).reverse().map(({ r, i }) => {
+      const d = new Date(r.ts).toLocaleString('en-GB', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+      const pass = r.pct >= 70;
+      const scope = r.mode === 'weak' ? '—' : (r.domain === 'all' ? 'All' : DOMAIN_NAMES[r.domain] || r.domain);
+      const src = r.mode === 'weak' ? '—' : (r.source === 'all' ? 'Mix' : r.source === 'et' ? 'Exam Prep' : 'Generated');
+      return `<tr>
+        <td>${d}</td>
+        <td>${modeLabel[r.mode] || r.mode}</td>
+        <td>${scope}</td>
+        <td>${src}</td>
+        <td><span class="res-badge ${pass?'correct':'wrong'}">${r.correct}/${r.total} · ${r.pct}%</span></td>
+        <td style="text-align:center;"><button class="del-btn" onclick="deleteResult(${i})" title="Delete entry">✕</button></td>
+      </tr>`;
+    }).join('');
+    histDiv.innerHTML = `<div class="pool-table-wrap"><table class="pool-table">
+      <thead><tr><th>Date</th><th>Mode</th><th>Scope</th><th>Source</th><th>Score</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+  }
+
+  renderQStatsTable();
+}
+
+function renderQStatsTable() {
+  const stats = loadQStats();
+  const filter = (document.getElementById('stats-q-filter') || {}).value || 'weak';
+  const domainF = (document.getElementById('stats-q-domain') || {}).value || 'all';
+  const container = document.getElementById('stats-qtable');
+  if (!container) return;
+
+  let list = questions.filter(Boolean).filter(q => {
+    if (domainF !== 'all' && q.domain !== domainF) return false;
+    const s = stats[q.id];
+    const st = qStatus(s);
+    if (filter === 'all') return true;
+    if (filter === 'weak') return st !== 'mastered';
+    if (filter === 'unseen') return st === 'unseen';
+    if (filter === 'mastered') return st === 'mastered';
+    if (filter === 'wrong') return s && s.lastResult === 'wrong';
+    return true;
+  });
+
+  // sort: weakest first (new, then lowest accuracy)
+  const rank = { unseen: 0, weak: 1, mastered: 2 };
+  list.sort((a, b) => {
+    const sa = stats[a.id], sb = stats[b.id];
+    const ra = rank[qStatus(sa)], rb = rank[qStatus(sb)];
+    if (ra !== rb) return ra - rb;
+    const accA = sa && sa.seen ? sa.correct / sa.seen : -1;
+    const accB = sb && sb.seen ? sb.correct / sb.seen : -1;
+    return accA - accB;
+  });
+
+  if (!list.length) {
+    container.innerHTML = '<p class="empty-msg">No questions in this view. 🎉</p>';
+    return;
+  }
+
+  const statusLabel = { unseen: 'New', weak: 'Weak', mastered: 'Mastered' };
+  const rows = list.map(q => {
+    const s = stats[q.id];
+    const st = qStatus(s);
+    const seen = s ? s.seen : 0;
+    const acc = s && s.seen ? Math.round(s.correct / s.seen * 100) : null;
+    const col = acc === null ? 'var(--text2)' : acc >= 70 ? 'var(--correct)' : acc >= 50 ? 'var(--warn)' : 'var(--danger)';
+    const accCell = acc === null ? '<span style="color:var(--text2)">—</span>'
+      : `<span class="acc-bar"><i style="width:${acc}%; background:${col}"></i></span><span style="color:${col};font-size:12px;">${acc}%</span>`;
+    const last = s && s.lastResult ? `<span class="res-badge ${s.lastResult}">${s.lastResult==='correct'?'✓':'✗'}</span>` : '—';
+    const qText = q.q.length > 90 ? q.q.slice(0, 90) + '…' : q.q;
+    return `<tr>
+      <td style="text-align:center;color:var(--text)">${q.id}</td>
+      <td><span class="dom-badge">${DOMAIN_NAMES[q.domain]}</span></td>
+      <td class="q-cell">${qText}</td>
+      <td style="text-align:center;">${seen}</td>
+      <td style="white-space:nowrap;">${accCell}</td>
+      <td style="text-align:center;">${last}</td>
+      <td><span class="q-status ${st}">${statusLabel[st]}</span></td>
+    </tr>`;
+  }).join('');
+
+  container.innerHTML = `<table class="pool-table">
+    <thead><tr><th>#</th><th>Domain</th><th>Question</th><th>Tries</th><th>Accuracy</th><th>Last</th><th>Status</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function deleteResult(i) {
+  const results = loadResults();
+  results.splice(i, 1);
+  localStorage.setItem(KEY_RESULTS, JSON.stringify(results));
+  renderStats();
+}
+
+function clearHistory() {
+  if (!confirm('Delete all test history? (Per-question stats will be kept.)')) return;
+  localStorage.removeItem(KEY_RESULTS);
+  renderStats();
+}
+
+function resetAllStats() {
+  if (!confirm('Reset ALL stats and history? This cannot be undone.')) return;
+  localStorage.removeItem(KEY_RESULTS);
+  localStorage.removeItem(KEY_QSTATS);
+  renderStats();
+}
+
+function exportProgress() {
+  const data = { app: 'CIS-DF', exportedAt: new Date().toISOString(), qstats: loadQStats(), results: loadResults() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `cis-df-progress-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importProgress(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== 'object' || (!data.qstats && !data.results)) throw new Error('format');
+      if (!confirm('Import progress from file? This will replace the current stats in this browser.')) { event.target.value = ''; return; }
+      if (data.qstats) localStorage.setItem(KEY_QSTATS, JSON.stringify(data.qstats));
+      if (data.results) localStorage.setItem(KEY_RESULTS, JSON.stringify(data.results));
+      renderStats();
+      alert('Progress imported ✅');
+    } catch (err) {
+      alert('Could not load the file — invalid format.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 </script>
 </body>
