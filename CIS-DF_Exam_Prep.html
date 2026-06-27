@@ -661,6 +661,28 @@
   </div>
 
   <div class="plan-section">
+    <h2>🎲 Test z najrzadziej ćwiczonych pytań</h2>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Wybiera pytania, które pojawiły się najmniej razy w Twoich statystykach — równomiernie pokrywa cały materiał (nieprzećwiczone trafiają pierwsze).</p>
+    <div class="stats-actions">
+      <select id="stats-least-count">
+        <option value="10">10 pytań</option>
+        <option value="20" selected>20 pytań</option>
+        <option value="30">30 pytań</option>
+        <option value="40">40 pytań</option>
+      </select>
+      <select id="stats-least-domain">
+        <option value="all">Wszystkie domeny</option>
+        <option value="config">Configuration</option>
+        <option value="ingest">Ingest</option>
+        <option value="govern">Govern</option>
+        <option value="csdm">CSDM</option>
+        <option value="insight">Insight</option>
+      </select>
+      <button onclick="practiceLeastSeen()">▶ Start testu</button>
+    </div>
+  </div>
+
+  <div class="plan-section">
     <h2>🎯 Statystyki pytań — co powtórzyć</h2>
     <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Słabe = ostatnio błędne lub skuteczność poniżej 60%. Nowe = jeszcze nie ćwiczone.</p>
     <div class="pool-controls">
@@ -1095,6 +1117,38 @@ const questions = [
   {id:336,domain:"csdm",source:"et",type:"single",q:"[DD] Jaki jest główny benefit Foundation domain CSDM?",opts:["Mapowanie relacji serwisowych","Dane organizacyjne (Company, BU, Location) jako fundament","Implementacja polityk lifecycle","Modelowanie Business Applications"],correct:[1],explain:"Foundation = baza danych organizacyjnych, fundament całego CSDM."},
   {id:337,domain:"csdm",source:"et",type:"single",q:"[DD] Jaki jest główny benefit Service Delivery domain CSDM?",opts:["Dane organizacyjne","Business Capabilities","Operational services dla ITSM (Incident/Change/Problem)","Lifecycle produktów"],correct:[2],explain:"Service Delivery = operational services (Business Service, Tech Mgmt, App Service) zasilające ITSM."},
 
+  // ========== UZUPEŁNIENIE POKRYCIA (autorskie, wg blueprintu egzaminu) ==========
+  // Asset <-> CI alignment (Ingest)
+  {id:400,domain:"ingest",source:"my",type:"single",q:"Jak – w zalecanym modelu – powiązane są rekord zasobu (Asset, alm_asset) i rekord elementu konfiguracji (CI, cmdb_ci)?",opts:["Jeden Asset mapuje się na wiele CI","To ten sam rekord w jednej tabeli","Jeden-do-jednego: pole 'CI' na Asset wskazuje pojedynczy rekord CI","Pole 'Model' na CI wskazuje wiele Assetów"],correct:[2],explain:"Zalecany model to 1:1 – pole CI na rekordzie Asset (alm_asset.ci) wskazuje dokładnie jeden cmdb_ci. Asset śledzi cykl finansowo-kontraktowy, CI – dane operacyjne i relacje."},
+  {id:401,domain:"ingest",source:"my",type:"multi",q:"Pole State (install status) na rekordzie Asset zostaje zmienione. Które pola są out-of-the-box automatycznie synchronizowane na powiązanym rekordzie CI? (wybierz dwa)",opts:["Install status","Operational status","Hardware status / substatus","Assigned to"],correct:[0,2],explain:"Synchronizacja Asset–CI OOB utrzymuje zgodność Install status oraz Hardware status/substatus. Operational status jest zarządzany osobno i nie zmienia się przez zmianę stanu Asset."},
+  {id:402,domain:"ingest",source:"my",type:"single",q:"Które zdanie najlepiej opisuje podział odpowiedzialności między Asset a CI?",opts:["Asset przechowuje relacje i zależności; CI przechowuje koszt","Asset śledzi dane finansowo-kontraktowe (koszt, własność, kontrakty); CI śledzi dane operacyjne i relacje","Oba przechowują identyczne dane dla redundancji","CI powstaje dopiero po wycofaniu Asset"],correct:[1],explain:"Asset = cykl finansowo-kontraktowy (zakup, koszt, kontrakty, własność). CI = dane operacyjno-techniczne i relacje używane przez ITSM/ITOM. Powiązane 1:1."},
+  // Compliance / regulatory identifiers vs CSDM objects (Ingest)
+  {id:403,domain:"ingest",source:"my",type:"single",q:"Firma musi rejestrować, które Business Applications przetwarzają dane regulowane (PCI-DSS, PII), aby audytować je względem obiektów CSDM. Który element CSDM służy do modelowania tej relacji danych/zgodności?",opts:["Dynamic CI Group","Information Object powiązany z Business Application","Rekord Discovery Source","Service Offering"],correct:[1],explain:"Klasa Information Object w CSDM modeluje encje danych (np. dane regulowane/PII) i wiąże je z Business Applications, umożliwiając śledzenie identyfikatorów zgodności względem obiektów CSDM."},
+  {id:404,domain:"ingest",source:"my",type:"single",q:"Jaki jest zalecany sposób śledzenia identyfikatora zgodności regulacyjnej (np. klasyfikacji danych) dla CI, aby pozostał odpytywalny i audytowalny?",opts:["Wpisać go w Short description CI","Przechowywać jako ustrukturyzowany atrybut CI / przez powiązany Information Object","Trzymać tylko w zewnętrznym arkuszu","Dodać do nazwy źródła Discovery"],correct:[1],explain:"Identyfikatory zgodności powinny być danymi ustrukturyzowanymi – atrybut CI lub powiązany Information Object – aby dało się je raportować, filtrować i audytować, a nie tekstem w opisie."},
+  // CMDB Data Foundations Dashboard + Playbooks (Govern)
+  {id:405,domain:"govern",source:"my",type:"single",q:"Co odróżnia CMDB Data Foundations Dashboard od CMDB Health Dashboard?",opts:["Pokazuje tylko duplikaty CI","Dostarcza prowadzone, konkretne Playbooki do budowy i poprawy danych fundamentalnych/CSDM w kolejnych etapach dojrzałości","Zastępuje Discovery","To ten sam dashboard pod nową nazwą"],correct:[1],explain:"Data Foundations Dashboard prowadzi poprawę danych fundamentalnych i CSDM za pomocą Playbooków w kolejnych etapach (Foundation→Fly). Health Dashboard skupia się na ocenie Completeness, Compliance i Correctness."},
+  {id:406,domain:"govern",source:"my",type:"single",q:"Jaki jest cel Playbooka w CMDB Data Foundations Dashboard?",opts:["Uruchamianie harmonogramów Discovery","Dostarczenie ustrukturyzowanego, krok-po-kroku przewodnika do analizy i naprawy konkretnego problemu z danymi","Definiowanie identifier entries dla IRE","Eksport CMDB do Excela"],correct:[1],explain:"Playbook to ustrukturyzowany przewodnik prowadzący administratora przez zrozumienie i naprawę konkretnego problemu z jakością danych – z podsumowaniem, opisem problemu, wagą i krokami naprawy."},
+  {id:407,domain:"govern",source:"my",type:"single",q:"Jaka jest poprawna kolejność struktury Playbooka w Data Foundations Dashboard?",opts:["Fix/Improve → Waga → Opis problemu → Podsumowanie","Podsumowanie wskaźnika → Opis problemu → Waga rozwiązania → Fix or Improve","Opis → Podsumowanie → Fix/Improve → Waga","Waga → Podsumowanie → Opis → Fix/Improve"],correct:[1],explain:"Kolejność Playbooka: (1) Podsumowanie wskaźnika, (2) Opis problemu, (3) Waga rozwiązania problemu, (4) Fix or Improve (napraw/popraw)."},
+  {id:408,domain:"govern",source:"my",type:"single",q:"Nieaktualne serwery trzeba najpierw potwierdzić jako zbędne, potem wycofać, a na końcu usunąć z CMDB. Która sekwencja polityk Data Manager to wspiera?",opts:["Delete → Retire → Attestation","Attestation/Certification → Retirement → Deletion","Archive → Attestation → Insert","Retirement → Attestation → Archive"],correct:[1],explain:"Potwierdzenie przez Attestation/Certification, przejście polityką Retirement, na końcu usunięcie polityką Deletion. Data Manager uruchamia te polityki cyklu życia wg harmonogramu."},
+  {id:409,domain:"govern",source:"my",type:"multi",q:"Które dwa pola opisują operacyjny cykl życia CI w modelu CSDM? (wybierz dwa)",opts:["Life Cycle Stage","Install status (legacy)","Life Cycle Stage Status","Discovery source"],correct:[0,2],explain:"CSDM opisuje cykl życia polami Life Cycle Stage i Life Cycle Stage Status. Starsze install_status/operational_status mapują się na nie przez life cycle mappings."},
+  {id:410,domain:"govern",source:"my",type:"single",q:"Gdzie przegląda się/konfiguruje sposób tłumaczenia starszych wartości statusu (np. install_status) na CSDM Life Cycle Stage i Stage Status?",opts:["Life Cycle Mappings","CI Class Manager → Basic Info","Reconciliation Rules","Harmonogramy Discovery"],correct:[0],explain:"Moduł Life Cycle Mappings definiuje, jak starsze wartości cyklu życia mapują się na CSDM Life Cycle Stage i Life Cycle Stage Status."},
+  // Insight – reporting / NLQ / mapy / wartość biznesowa
+  {id:411,domain:"insight",source:"my",type:"single",q:"Co umożliwia Natural Language Query (NLQ) w CMDB Workspace?",opts:["Pisanie business rules po angielsku","Zadawanie pytań w języku naturalnym, by pobrać CI bez ręcznego budowania filtrów warunków","Tłumaczenie UI na inne języki","Uruchamianie Discovery głosem"],correct:[1],explain:"NLQ pozwala wpisać pytanie w języku naturalnym (np. 'serwery Windows bez support group') i zwraca pasujące CI bez ręcznego budowania zakodowanych filtrów."},
+  {id:412,domain:"insight",source:"my",type:"single",q:"Potrzebujesz wielokrotnego, współdzielonego raportu, który przechodzi po relacjach między kilkoma klasami CI (np. Business Service → Application → Server). Które narzędzie to zbuduje?",opts:["CMDB Query Builder (Saved Query)","Pojedynczy filtr listy na cmdb_ci","Import Set","Wzorzec Discovery"],correct:[0],explain:"CMDB Query Builder buduje wizualne zapytania wieloklasowe po relacjach, które można zapisać (Saved Query) i użyć ponownie jako źródło raportów/dashboardów."},
+  {id:413,domain:"insight",source:"my",type:"single",q:"Jaka jest kluczowa korzyść z zapisania zapytania CMDB Query Builder jako Saved Query?",opts:["Automatycznie usuwa duplikaty CI","Można je użyć ponownie i jako źródło danych raportów i dashboardów","Wyłącza IRE","Szyfruje CMDB"],correct:[1],explain:"Saved Queries są wielokrotnego użytku i mogą zasilać raporty/dashboardy, umożliwiając spójne raportowanie KPI na złożonych danych relacyjnych."},
+  {id:414,domain:"insight",source:"my",type:"single",q:"Która funkcja graficznie pokazuje zależności CI w górę i w dół dla analizy wpływu?",opts:["Dependency Views / Unified Map","Transform Import Set","Zakładka hierarchii w CI Class Manager","Lista scheduled jobs"],correct:[0],explain:"Dependency Views (Unified Map) wizualizują powiązane CI i kierunki relacji, wspierając analizę wpływu i przyczyn źródłowych."},
+  {id:415,domain:"insight",source:"my",type:"single",q:"Change Manager chce wiedzieć, które Business Services zostaną dotknięte, zanim zatwierdzi przerwę serwera. Która możliwość CMDB to zapewnia?",opts:["Analiza wpływu oparta na relacjach (Affected CIs / mapa zależności)","Log Discovery","Talia flashcardów","Tabela sys_audit"],correct:[0],explain:"Dokładne relacje CI pozwalają Change wykorzystać analizę wpływu (Affected CIs, mapy zależności), by zobaczyć, które Business Services zależą od serwera – kluczowa wartość biznesowa CMDB."},
+  {id:416,domain:"insight",source:"my",type:"multi",q:"Które elementy/korzyści dają CMDB Data Foundations Dashboards w obszarze insight? (wybierz dwa)",opts:["Metryki zdrowia/jakości jako KPI","Prowadzone Playbooki do remediacji","Automatyczna konfiguracja firewalla","Administracja serwerem pocztowym"],correct:[0,1],explain:"Dashboardy pokazują KPI jakości danych i dają prowadzone Playbooki do naprawy problemów – zamieniając dane CMDB w konkretny insight."},
+  {id:417,domain:"insight",source:"my",type:"single",q:"Raport ma pokazywać incydenty i zgodność SLA per Service Offering skierowane do klienta. Co musi istnieć w CMDB, by to umożliwić?",opts:["Relacja łącząca rekordy z właściwym Service Offering","Druga tabela cmdb_ci","Wyłączony IRE","Własny motyw graficzny"],correct:[0],explain:"Service Offerings muszą być zamodelowane i powiązane z odpowiednimi CI/rekordami, aby raporty mogły agregować incydenty, SLA i wpływ per offering."},
+  {id:418,domain:"insight",source:"my",type:"single",q:"Nietechniczny interesariusz potrzebuje szybkiej odpowiedzi ad-hoc ('ile laptopów jest na stanie?') bez budowania filtrów. Które narzędzie pasuje najlepiej?",opts:["Natural Language Query (NLQ)","Identifier entries IRE","Transform Map","MID Server"],correct:[0],explain:"NLQ jest idealne do szybkich, doraźnych pytań w języku naturalnym; CMDB Query Builder lepiej nadaje się do złożonych, wielokrotnych raportów relacyjnych."},
+  // Dynamic reconciliation rule selection + Data Refresh (Ingest / CMDB 360)
+  {id:419,domain:"ingest",source:"my",type:"single",q:"W multisource CMDB atrybut ma zawsze zachowywać najwcześniejszą datę 'first discovered' spośród źródeł. Który typ dynamic reconciliation rule ma zastosowanie?",opts:["Largest Value","Smallest Value","Most Reported","Last Created"],correct:[1],explain:"Smallest Value zachowuje najniższą/najwcześniejszą wartość (przydatne dla najwcześniejszych dat lub minimów). 'Last Created/Last Updated' nie są poprawnymi typami dynamic reconciliation rule w kreatorze."},
+  {id:420,domain:"ingest",source:"my",type:"single",q:"Który typ dynamic reconciliation rule rozwiązuje konflikt atrybutu, wybierając wartość zgłoszoną przez najwięcej źródeł danych?",opts:["Most Reported","Largest Value","Smallest Value","Priority Only"],correct:[0],explain:"Most Reported wybiera wartość podaną przez największą liczbę źródeł. Smallest/Largest Value wybierają wg wielkości; statyczny priorytet wg rangi źródła."},
+  {id:421,domain:"ingest",source:"my",type:"single",q:"Co umożliwiają Data Refresh Rules w multisource CMDB?",opts:["Usuwają duplikaty CI","Pozwalają źródłu o niższym priorytecie zaktualizować atrybut, gdy źródło o wyższym priorytecie nie aktualizowało go przez określony czas","Wyłączają IRE","Łączą dwie klasy CI"],correct:[1],explain:"Data Refresh Rules pozwalają źródłu o niższym priorytecie odświeżyć atrybut, gdy źródło o wyższym priorytecie było nieaktywne przez skonfigurowany czas – zapobiega to nieaktualnym danym."},
+  // CSDM – scenariusze branżowe / podejście wdrożeniowe
+  {id:422,domain:"csdm",source:"my",type:"single",q:"Bank detaliczny chce zrozumieć, które usługi dla klienta (bankowość online, sieć bankomatów) zależą od których usług technicznych i infrastruktury. Które konstrukcje CSDM przede wszystkim opisują ofertę dla klienta i jej dostarczanie?",opts:["Business/Application Services i Service Offerings w domenie Service Delivery","Tylko harmonogramy Discovery","Import Sets","MID Servery"],correct:[0],explain:"Oferty dla klienta modeluje się jako Business/Application Services i Service Offerings (domeny Service Delivery / Sell-Consume), a następnie wiąże z usługami technicznymi i CI, które je dostarczają."},
+  {id:423,domain:"csdm",source:"my",type:"single",q:"Organizacja z legacy CMDB, ograniczonym budżetem ITOM i pilnym terminem zgodności pyta, jak wdrożyć CSDM. Jakie jest zalecane podejście?",opts:["Wdrożyć wszystkie domeny CSDM naraz, zanim pojawi się wartość","Wdrażać CSDM przyrostowo (Crawl→Walk→Run), zaczynając od danych Foundation i domen adresujących bieżącą potrzebę","Pominąć CSDM i używać arkuszy","Wypełnić tylko domenę Build"],correct:[1],explain:"CSDM wdraża się przyrostowo przez etapy dojrzałości (Crawl/Walk/Run/Fly); zacznij od danych Foundation i domen o największej wartości dla bieżącej potrzeby, zamiast robić wszystko naraz."},
+
 ];
 
 // ===================== FLASHCARD LOGIC =====================
@@ -1152,11 +1206,11 @@ let correct_count = 0;
 let currentQuizMeta = { mode: 'normal', domain: 'all', source: 'all' };
 let currentQuizDetail = [];
 
-function startQuiz(customPool) {
+function startQuiz(customPool, mode) {
   let pool, meta;
   if (customPool) {
     pool = customPool;
-    meta = { mode: 'weak', domain: 'all', source: 'all' };
+    meta = { mode: mode || 'weak', domain: 'all', source: 'all' };
   } else {
     const domain = document.getElementById('quiz-domain').value;
     const source = document.getElementById('quiz-source').value;
@@ -1395,6 +1449,26 @@ function practiceWeak() {
   startQuiz(pool);
 }
 
+function practiceLeastSeen() {
+  const stats = loadQStats();
+  const n = parseInt(document.getElementById('stats-least-count').value) || 20;
+  const dom = document.getElementById('stats-least-domain').value;
+  let pool = questions.filter(Boolean).filter(q => dom === 'all' || q.domain === dom);
+  if (!pool.length) { alert('Brak pytań dla wybranej domeny.'); return; }
+  // sortuj rosnąco po liczbie wyświetleń (nieprzećwiczone = 0 trafiają pierwsze), losowy tiebreak
+  pool = pool.map(q => ({ q, seen: (stats[q.id] && stats[q.id].seen) || 0, r: Math.random() }))
+             .sort((a, b) => a.seen - b.seen || a.r - b.r)
+             .slice(0, Math.min(n, pool.length))
+             .map(x => x.q)
+             .sort(() => Math.random() - 0.5);
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-quiz').classList.add('active');
+  document.querySelector(".tab-btn[onclick=\"showTab('quiz')\"]").classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  startQuiz(pool, 'least');
+}
+
 function renderStats() {
   const stats = loadQStats();
   const results = loadResults();
@@ -1440,12 +1514,12 @@ function renderStats() {
   if (!results.length) {
     histDiv.innerHTML = '<p class="empty-msg">Brak ukończonych testów. Rozwiąż quiz, aby zobaczyć historię.</p>';
   } else {
-    const modeLabel = { normal: 'Normalny', weak: 'Powtórka' };
+    const modeLabel = { normal: 'Normalny', weak: 'Powtórka', least: 'Najrzadsze' };
     const rows = results.map((r, i) => ({ r, i })).reverse().map(({ r, i }) => {
       const d = new Date(r.ts).toLocaleString('pl-PL', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
       const pass = r.pct >= 70;
-      const scope = r.mode === 'weak' ? '—' : (r.domain === 'all' ? 'Wszystkie' : DOMAIN_NAMES[r.domain] || r.domain);
-      const src = r.mode === 'weak' ? '—' : (r.source === 'all' ? 'Mix' : r.source === 'et' ? 'Exam Prep' : 'Wygenerowane');
+      const scope = r.mode !== 'normal' ? '—' : (r.domain === 'all' ? 'Wszystkie' : DOMAIN_NAMES[r.domain] || r.domain);
+      const src = r.mode !== 'normal' ? '—' : (r.source === 'all' ? 'Mix' : r.source === 'et' ? 'Exam Prep' : 'Wygenerowane');
       return `<tr>
         <td>${d}</td>
         <td>${modeLabel[r.mode] || r.mode}</td>
